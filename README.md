@@ -16,7 +16,7 @@ Add the dependency to your `project.janet` file:
 
 ## Usage
 
-Lemongras can be used like this:
+Lemongrass can be used like this:
 
 ```janet
 (import lemongrass)
