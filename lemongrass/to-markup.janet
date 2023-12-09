@@ -1,11 +1,11 @@
 (defn- janet->html [ds &keys {:add-doctype? add-doctype?
                               :indent indent}]
-  (default add-doctype? false)
+  (default add-doctype? true)
   (default indent nil)
   (def res (if (or (nil? indent) (zero? indent))
              @""
              (buffer (string/repeat " " indent))))
-  (if add-doctype?
+  (if (and add-doctype? (indexed? ds) (= :html (first ds)))
     (buffer/push res "<!doctype html>" (if indent "\n" "")))
   (cond
     (bytes? ds)
@@ -106,7 +106,7 @@
   (each node nodes
     (buffer/push res newline
       (case format
-        :html (janet->html node :add-doctype? true :indent indent)
+        :html (janet->html node :indent indent)
         :xml (janet->xml node :indent indent)
         (error "unsupported format")))
     (unless (and indent (> 1 (length nodes)))
