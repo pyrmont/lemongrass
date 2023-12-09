@@ -46,13 +46,13 @@
                                  ">"))
                  :inst (group (* "<?"
                                  (cmt :name ,key-qmark)
-                                 (any (* :s+ :tag-attrs))
+                                 (? (cmt (any (* :s+ :tag-attrs)) ,tag-attrs))
                                  "?>"))
                  :text '(to (+ "<" ">" -1))
                  }))
 
 
-(def voids
+(def void-elements
   [:area :base :basefont :bgsound :br :col :command :embed :frame :hr :image
    :img :input :keygen :link :meta :param :source :track :wbr])
 
@@ -73,7 +73,7 @@
     (array/remove el end)
     (let [name (first el)]
       (or (has-value? [33 63] (first name))
-          (and html? (has-value? voids (first el)))))))
+          (and html? (has-value? void-elements (first el)))))))
 
 
 (defn markup->janet

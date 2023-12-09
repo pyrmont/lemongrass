@@ -23,6 +23,9 @@ Lemongrass can be used like this:
 
 (lemongrass/markup->janet `<h1 class="foo">Hello world!</h1>`)
 # => @[:h1 @{:class "foo"} "Hello world!"]
+
+(lemongrass/janet->markup [:h1 {:class "foo"} "Hello world!"])
+# => "<h1 class="foo">Hello world!</h1>"
 ```
 
 ## Bugs
