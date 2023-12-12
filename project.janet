@@ -51,3 +51,7 @@
     (do
       (print "no dev-dependencies found")
       (flush))))
+
+# Testing
+
+(task "test-deps" ["dev-deps" "exe-deps"])
