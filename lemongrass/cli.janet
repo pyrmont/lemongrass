@@ -9,7 +9,7 @@
   {:rules [:input          {:default :stdin
                             :help    "The <path> for the input file."}
            "--format"      {:default "html"
-                            :help    "The <format> of the markup."
+                            :help    "The <format> of the markup, either html or xml."
                             :kind    :single
                             :proxy   "format"
                             :short   "f"}
@@ -43,15 +43,18 @@
       (os/exit 1))
 
     (do
-      (def i-path (get-in parsed [:params :input]))
+      (def opts (parsed :opts))
+      (def params (parsed :params))
+      (def i-path (params :input))
       (def input (if (= :stdin i-path)
                    (getline)
                    (slurp i-path)))
-      (def to-markup? (get-in parsed [:opts "reverse"]))
+      (def to-markup? (opts "reverse"))
+      (def html? (= "html" (opts "format")))
       (def output (if to-markup?
                     (lg/janet->markup (eval-string input))
-                    (lg/markup->janet input)))
-      (def o-path (get-in parsed [:opts "output"]))
+                    (lg/markup->janet input :html? html?)))
+      (def o-path (opts "output"))
       (if (= :stdout o-path)
         (pp output)
         (spit o-path output)))))
