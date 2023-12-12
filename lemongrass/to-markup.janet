@@ -101,7 +101,7 @@
   (default format :html)
   (default indent nil)
   (def res @"")
-  (def nodes (if (keyword? (first ds)) [ds] ds))
+  (def nodes (if (indexed? (first ds)) ds [ds]))
   (var newline "")
   (each node nodes
     (buffer/push res newline
