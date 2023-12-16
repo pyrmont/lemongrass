@@ -44,4 +44,12 @@
   (is (== expect actual)))
 
 
+(deftest multiple-attrs
+  (def html
+    `<a href="http://example.com/" rel="nofollow">Foo</a>`)
+  (def actual (markup->janet html))
+  (def expect [:a {:href "http://example.com/" :rel "nofollow"} "Foo"])
+  (is (== expect actual)))
+
+
 (run-tests!)

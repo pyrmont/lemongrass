@@ -24,7 +24,7 @@
                  :tag-open (group (* "<"
                                      :s*
                                      (cmt :name ,key-name)
-                                     (any (cmt (* :s+ :tag-attrs) ,tag-attrs))
+                                     (? (cmt (any (* :s+ :tag-attrs)) ,tag-attrs))
                                      :s*
                                      (? (/ '"/" true))
                                      ">"))
