@@ -3,9 +3,12 @@
 [![Build Status](https://github.com/pyrmont/lemongrass/workflows/build/badge.svg)](https://github.com/pyrmont/lemongrass/actions?query=workflow%3Abuild)
 
 Lemongrass is a pure Janet library for converting between markup languages like
-HTML and XML and Janet data structures.
+HTML and XML and Janet data structures. It comes with a CLI utility for
+converting at the command line.
 
-## Installation
+## Library
+
+### Installation
 
 Add the dependency to your `project.janet` file:
 
@@ -14,7 +17,7 @@ Add the dependency to your `project.janet` file:
   :dependencies ["https://github.com/pyrmont/lemongrass"])
 ```
 
-## Usage
+### Usage
 
 Lemongrass can be used like this:
 
@@ -26,6 +29,39 @@ Lemongrass can be used like this:
 
 (lemongrass/janet->markup [:h1 {:class "foo"} "Hello world!"])
 # => "<h1 class="foo">Hello world!</h1>"
+```
+
+## Utility
+
+### Installation
+
+To install the `lg` CLI utility with JPM:
+
+```shell
+$ jpm install "https://github.com/pyrmont/lemongrass"
+```
+
+### Usage
+
+Run `lg --help` for usage information:
+
+```shell
+$ lg --help
+Usage: lg [--format <format>] [--output <path>] [--reverse] [<input>]
+
+Convert from HTML/XML to Janet data structures.
+
+Parameters:
+
+ input    The <path> for the input file. (Default: stdin)
+
+Options:
+
+ -f, --format <format>    The <format> of the markup, either html or xml. (Default: html)
+ -o, --output <path>      The <path> for the output file. (Default: stdout)
+ -r, --reverse            Reverse the polarity and convert from Janet to markup.
+
+ -h, --help               Show this help message.
 ```
 
 ## Bugs
