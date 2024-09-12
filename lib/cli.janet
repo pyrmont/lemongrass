@@ -1,5 +1,5 @@
 (import ../deps/argy-bargy/argy-bargy :as argy)
-(import ./init :as lg)
+(import ../init :as lg)
 
 
 (def config

@@ -19,7 +19,8 @@
 
 (declare-source
   :source ["deps"
-           "lib"]
+           "lib"
+           "init.janet"]
   :prefix "lemongrass")
 
 
