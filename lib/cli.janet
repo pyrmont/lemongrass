@@ -1,4 +1,4 @@
-(import argy-bargy :as argy)
+(import ../deps/argy-bargy/argy-bargy :as argy)
 (import ./init :as lg)
 
 

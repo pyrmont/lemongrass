@@ -1,7 +1,7 @@
-(use testament)
+(use /deps/testament/src/testament)
 
 
-(import ../lemongrass/to-markup :prefix "")
+(import ../lib/to-markup :as lg)
 
 
 (deftest basic-html
@@ -11,7 +11,7 @@
         @[:title "Hello HTML!"]]
       @[:body
         @[:h1 "Hello world!"]]])
-  (def actual (janet->markup janet :indent 0))
+  (def actual (lg/janet->markup janet :indent 0))
   (def expect
     `<!doctype html>
     <html>
@@ -32,7 +32,7 @@
                  [:title "Hello RSS!"]]
                 [:item
                  [:description "Hello world!"]]]])
-  (def actual (janet->markup janet :format :xml :indent 0))
+  (def actual (lg/janet->markup janet :format :xml :indent 0))
   (def expect
     `<?xml version="1.0" encoding="UTF-8"?>
     <rss version="2.0">

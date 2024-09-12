@@ -1,0 +1,4 @@
+#!/usr/bin/env janet
+(import lemongrass/lib/cli)
+
+(cli/run)
