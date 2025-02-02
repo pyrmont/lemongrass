@@ -26,7 +26,7 @@
    :info {:about "Convert from HTML/XML to Janet data structures."}})
 
 
-(defn- main [& args]
+(defn run []
   (def parsed (argy/parse-args "lg" config))
   (def err (parsed :err))
   (def help (parsed :help))
@@ -58,3 +58,6 @@
       (if (= :stdout o-path)
         (pp output)
         (spit o-path output)))))
+
+
+(defn- main [& args] (run))
