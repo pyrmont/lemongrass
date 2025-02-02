@@ -45,7 +45,7 @@ $ jpm install "https://github.com/pyrmont/lemongrass"
 
 Run `lg --help` for usage information:
 
-```shell
+```
 $ lg --help
 Usage: lg [--format <format>] [--output <path>] [--reverse] [<input>]
 
