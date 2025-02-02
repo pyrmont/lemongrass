@@ -34,7 +34,7 @@
                  [:description "Hello world!"]]]])
   (def actual (lg/janet->markup janet :format :xml :indent 0))
   (def expect
-    `<?xml version="1.0" encoding="UTF-8"?>
+    `<?xml encoding="UTF-8" version="1.0"?>
     <rss version="2.0">
       <channel>
         <title>Hello RSS!</title>
