@@ -47,7 +47,7 @@
       (def params (parsed :params))
       (def i-path (params :input))
       (def input (if (= :stdin i-path)
-                   (getline)
+                   (file/read stdin :all)
                    (slurp i-path)))
       (def to-markup? (opts "reverse"))
       (def html? (= "html" (opts "format")))
