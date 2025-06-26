@@ -24,7 +24,7 @@
                  :tag-open (group (* "<"
                                      :s*
                                      (cmt :name ,key-name)
-                                     (? (cmt (any (* :s+ :tag-attrs)) ,tag-attrs))
+                                     (? (cmt (some (* :s+ :tag-attrs)) ,tag-attrs))
                                      :s*
                                      (? (/ '"/" true))
                                      ">"))
@@ -46,13 +46,13 @@
                                  ">"))
                  :inst (group (* "<?"
                                  (cmt :name ,key-qmark)
-                                 (? (cmt (any (* :s+ :tag-attrs)) ,tag-attrs))
+                                 (? (cmt (some (* :s+ :tag-attrs)) ,tag-attrs))
                                  "?>"))
                  :text '(to (+ "<" ">" -1))
                  }))
 
 
-(def void-elements
+(def- void-elements
   [:area :base :basefont :bgsound :br :col :command :embed :frame :hr :image
    :img :input :keygen :link :meta :param :source :track :wbr])
 
