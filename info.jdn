@@ -1,0 +1,4 @@
+{:name "lemongrass"
+ :executable ["bin/lg"]
+ :source {:prefix "lemongrass"
+          :files ["deps" "lib" "init.janet"]}}
