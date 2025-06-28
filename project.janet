@@ -27,12 +27,6 @@
   :prefix "lemongrass")
 
 
-# Tasks
-
-# (task "dev" []
-#   (bundle-install "https://github.com/pyrmont/testament"))
-
-
 (task "vendor" []
   (def sep (if (= :windows (os/which)) "\\" "/"))
   (def deps-dir "deps")

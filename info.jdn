@@ -1,4 +1,22 @@
 {:name "lemongrass"
+ :description "A converter in Janet for markup languages like HTML and XML"
+ :author "Michael Camilleri"
+ :license "MIT"
+ :url "https://github.com/pyrmont/lemongrass"
+ :repo "git+https://github.com/pyrmont/lemongrass"
+
+ :deps {
+   :vendored [
+     {:url "https://github.com/pyrmont/argy-bargy"
+      :prefix "argy-bargy"
+      :include ["argy-bargy.janet"
+                "LICENSE"]}
+     {:url "https://github.com/pyrmont/testament"
+      :prefix "testament"
+      :include ["lib/testament.janet"
+                "init.janet"
+                "LICENSE"]}]}
+
  :executable ["bin/lg"]
  :source {:prefix "lemongrass"
           :files ["deps" "lib" "init.janet"]}}
