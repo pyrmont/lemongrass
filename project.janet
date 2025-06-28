@@ -11,7 +11,8 @@
                         "LICENSE"]}
              {:url "https://github.com/pyrmont/testament"
               :prefix "testament"
-              :include ["src/testament.janet"
+              :include ["lib/testament.janet"
+                        "init.janet"
                         "LICENSE"]}])
 
 

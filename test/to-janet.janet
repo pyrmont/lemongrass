@@ -1,4 +1,4 @@
-(use /deps/testament/src/testament)
+(use ../deps/testament)
 
 
 (import ../lib/to-janet :as lg)

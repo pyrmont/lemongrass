@@ -117,19 +117,25 @@
   Gets the columns in the terminal
   ```
   []
-  (if (nil? cols)
+  (if cols
+    cols
     (do
+      (def win? (= :windows (os/which)))
       (def cmd
-        (if (= :windows (os/which))
+        (if win?
           ["powershell" "-command" "&{(get-host).ui.rawui.WindowSize.Width;}"]
-          ["tput" "cols"]))
+          ["stty" "size"]))
       (with [f (file/temp)]
-        (os/execute cmd :p {:out f})
-        (file/seek f :set 0)
-        (def out (file/read f :all))
-        (def tcols (scan-number (string/trim out)))
-        (min tcols max-width)))
-    cols))
+        (def exit-code (os/execute cmd :p {:out f :err nil}))
+        (if (zero? exit-code)
+          (do
+            (file/seek f :set 0)
+            (def out (string/trim (file/read f :all)))
+            (def tcols (if win?
+                         (scan-number out)
+                         (scan-number (-> (string/split " " out) (get 1)))))
+            (min tcols max-width))
+          max-width)))))
 
 
 (defn- get-rule
