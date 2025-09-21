@@ -15,11 +15,10 @@ a CLI utility for converting at the command line.
 
 ### Installation
 
-Add the dependency to your `project.janet` file:
+Add the dependency to your `info.jdn` file:
 
 ```janet
-(declare-project
-  :dependencies ["https://github.com/pyrmont/lemongrass"])
+  :dependencies ["https://github.com/pyrmont/lemongrass"]
 ```
 
 ### Usage
@@ -35,6 +34,8 @@ Lemongrass can be used like this:
 (lemongrass/janet->markup [:h1 {:class "foo"} "Hello world!"])
 # => "<h1 class="foo">Hello world!</h1>"
 ```
+
+Check out the [API document](api.md) for more information.
 
 ## Utility
 
