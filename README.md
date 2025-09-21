@@ -1,6 +1,9 @@
 # Lemongrass
 
-[![Build Status](https://github.com/pyrmont/lemongrass/workflows/build/badge.svg)](https://github.com/pyrmont/lemongrass/actions?query=workflow%3Abuild)
+[![Test Status][icon]][status]
+
+[icon]: https://github.com/pyrmont/lemongrass/workflows/test/badge.svg
+[status]: https://github.com/pyrmont/lemongrass/actions?query=workflow%3Atest
 
 Lemongrass is a pure Janet library for converting between markup languages like
 HTML and XML and Janet data structures (in [Hiccup syntax][hs]). It comes with
