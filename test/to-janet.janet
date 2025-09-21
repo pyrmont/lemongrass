@@ -22,6 +22,12 @@
                 [:h1 "Hello world!"]]])
   (is (== expect actual)))
 
+(defn fun-returns-bar [] :bar)
+(deftest foo
+  (def expect :foo)
+  (def actual (fun-returns-bar))
+  (is (== expect actual)))
+
 
 (deftest basic-xml
   (def xml

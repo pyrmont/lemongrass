@@ -5,15 +5,17 @@
  :url "https://github.com/pyrmont/lemongrass"
  :repo "git+https://github.com/pyrmont/lemongrass"
 
- :vendored [{:url "https://github.com/pyrmont/argy-bargy"
-             :prefix "argy-bargy"
-             :include ["argy-bargy.janet"
-                       "LICENSE"]}
-            {:url "https://github.com/pyrmont/testament"
-             :prefix "testament"
-             :include ["lib/testament.janet"
-                       "init.janet"
-                       "LICENSE"]}]
+ :vendored {
+   "deps" [
+    {:url "https://github.com/pyrmont/argy-bargy"
+     :prefix "argy-bargy"
+     :files ["argy-bargy.janet"
+             "LICENSE"]}
+    {:url "https://github.com/pyrmont/testament"
+     :prefix "testament"
+     :files ["lib/testament.janet"
+             "init.janet"
+             "LICENSE"]}]}
 
  :executable ["bin/lg"]
  :source {:prefix "lemongrass"
