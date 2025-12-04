@@ -1,8 +1,6 @@
 (use ../deps/testament)
 
-
 (import ../lib/to-janet :as lg)
-
 
 (deftest basic-html
   (def html
@@ -21,13 +19,6 @@
                [:body
                 [:h1 "Hello world!"]]])
   (is (== expect actual)))
-
-(defn fun-returns-bar [] :bar)
-(deftest foo
-  (def expect :foo)
-  (def actual (fun-returns-bar))
-  (is (== expect actual)))
-
 
 (deftest basic-xml
   (def xml
@@ -49,13 +40,11 @@
                  [:description "Hello world!"]]]])
   (is (== expect actual)))
 
-
 (deftest multiple-attrs
   (def html
     `<a href="http://example.com/" rel="nofollow">Foo</a>`)
   (def actual (lg/markup->janet html))
   (def expect [:a {:href "http://example.com/" :rel "nofollow"} "Foo"])
   (is (== expect actual)))
-
 
 (run-tests!)

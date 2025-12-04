@@ -60,4 +60,4 @@
         (spit o-path output)))))
 
 
-(defn- main [& args] (run))
+(defn main [& args] (run))

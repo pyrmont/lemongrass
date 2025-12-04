@@ -1,8 +1,6 @@
 (use ../deps/testament)
 
-
 (import ../lib/to-markup :as lg)
-
 
 (deftest basic-html
   (def janet
@@ -24,7 +22,6 @@
     </html>`)
   (is (== expect actual)))
 
-
 (deftest basic-xml
   (def janet [[:?xml {:version "1.0" :encoding "UTF-8"}]
                [:rss {:version "2.0"}
@@ -44,7 +41,5 @@
       </item>
     </rss>`)
   (is (== expect actual)))
-
-
 
 (run-tests!)

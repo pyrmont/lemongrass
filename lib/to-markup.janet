@@ -10,10 +10,8 @@
   (cond
     (bytes? ds)
     ds
-
     (number? ds)
     (scan-number ds)
-
     (indexed? ds)
     (let [name (first ds)]
       (buffer/push res "<")
@@ -39,9 +37,7 @@
                 (buffer/push res "\n" (string/repeat " " indent)))
               (buffer/push res "</" name ">")))))
       res)
-
     (error "invalid data structure")))
-
 
 (defn- janet->xml [ds &keys {:indent indent}]
   (default indent nil)
@@ -51,10 +47,8 @@
   (cond
     (bytes? ds)
     ds
-
     (number? ds)
     (scan-number ds)
-
     (indexed? ds)
     (let [name (first ds)]
       (buffer/push res "<")
@@ -86,9 +80,7 @@
                 (buffer/push res "\n" (string/repeat " " indent)))
               (buffer/push res "</" name ">")))))
       res)
-
     (error "invalid data structure")))
-
 
 (defn janet->markup
   ```
