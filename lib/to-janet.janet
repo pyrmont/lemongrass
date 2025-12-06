@@ -93,8 +93,17 @@
     (+= pos adv)
     (case (type val)
       :string
-      (unless (and (not in-pre) (string/check-set " \n\r\t\v" val))
+      (cond
+        in-pre
+        (array/push curr-node val)
+        (= " " val)
+        (array/push curr-node val)
+        (string/check-set " \n\r\t\v" val)
+        nil # do nothing
+        # default
         (array/push curr-node val))
+      # (unless (and (not in-pre) (string/check-set " \n\r\t\v" val))
+      #   (array/push curr-node val))
       :keyword
       (let [name (keyword/slice val 1)]
         (if (= curr-name name)

@@ -20,6 +20,24 @@
                 [:h1 "Hello world!"]]])
   (is (== expect actual)))
 
+(deftest basic-html-with-spaces
+  (def html
+    `<html>
+      <head>
+        <title>Hello HTML!</title>
+      </head>
+      <body>
+        <h1>Hello <em>to</em> <strong>the</strong> world!</h1>
+      </body>
+    </html>`)
+  (def actual (lg/markup->janet html))
+  (def expect [:html
+               [:head
+                [:title "Hello HTML!"]]
+               [:body
+                [:h1 "Hello " [:em "to"] " " [:strong "the"] " world!"]]])
+  (is (== expect actual)))
+
 (deftest basic-xml
   (def xml
     `<?xml version="1.0" encoding="UTF-8"?>
