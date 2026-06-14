@@ -25,8 +25,10 @@
   Gets the columns of the current terminal
   ```
   [&opt force?]
-  (if (and cols (not force?))
+  (when (and cols (not force?))
     (break cols))
+  (unless (os/isatty)
+    (break max-width))
   (def win? (= :windows (os/which)))
   (def cmd
     (if win?
@@ -69,6 +71,18 @@
     (array/concat res (peg/match grammar arg))
     (++ i))
   res)
+
+(defn- get-default
+  ```
+  Gets the default value from a rule
+
+  If the default is a function, calls it. Otherwise returns the value as-is.
+  ```
+  [rule]
+  (def dflt (rule :default))
+  (if (function? dflt)
+    (dflt)
+    dflt))
 
 (defn- make-parser
   ```
@@ -159,11 +173,11 @@
                  "number of elements in subcommands must be even: %p" config-subs)
         (assertf (dictionary? v)
                  "each subcommand must be struct or table: %p" v)
-        (def config (merge v {:name k}))
-        (put subs k config)
-        (when (config :short)
-          (put short-subs (config :short) config))
-        (array/push (ordered :subs) [k config])))
+        (def sub-config (merge v {:name k}))
+        (put subs k sub-config)
+        (when (sub-config :short)
+          (put short-subs (sub-config :short) sub-config))
+        (array/push (ordered :subs) [k sub-config])))
     (++ i))
   # return value
   @{:long-opts long-opts
@@ -278,7 +292,7 @@
     (def usage-help
       (stitch [(rule :help)
                (when (rule :default)
-                 (string "(Default: " (rule :default) ")"))]))
+                 (string "(Default: " (get-default rule) ")"))]))
     (array/push usages [usage-prefix usage-help])
     (set pad (max (+ pad-inset (length usage-prefix)) pad)))
   # print usage descriptions
@@ -315,7 +329,7 @@
         (def usage-help
           (stitch [(rule :help)
                    (when (rule :default)
-                     (string "(Default: " (rule :default) ")"))]))
+                     (string "(Default: " (get-default rule) ")"))]))
         (array/push usages [usage-prefix usage-help])
         (set pad (max (+ pad-inset (length usage-prefix)) pad)))))
   # print usage descriptions
@@ -417,10 +431,10 @@
       (xprint help)
       (xprint help (indent-str (info :about) 0)))
     (unless (empty? (rules :params))
-      (def shown-rules (filter (fn [[n r]] (not (has-key? r :hide?))) (rules :params)))
+      (def shown-rules (filter (fn [[_ r]] (not (has-key? r :hide?))) (rules :params)))
       (usage-parameters info shown-rules))
     (unless (empty? (rules :opts))
-      (def shown-rules (filter (fn [[n r]] (not (has-key? r :hide?))) (rules :opts)))
+      (def shown-rules (filter (fn [[_ r]] (not (has-key? r :hide?))) (rules :opts)))
       (usage-options info shown-rules))
     (unless (empty? (rules :subs))
       (usage-subcommands info (rules :subs)))
@@ -540,7 +554,7 @@
   (def opts (result :opts))
   (eachp [name rule] (parser :long-opts)
     (when (and (rule :default) (nil? (opts name)))
-      (put-in result [:opts name] (rule :default)))))
+      (put-in result [:opts name] (get-default rule)))))
 
 (defn- check-params
   ```
@@ -562,7 +576,7 @@
       (do
         (usage-error (or (rule :proxy) name) " is required")
         (break))
-      (put-in result [:params name] (rule :default)))
+      (put-in result [:params name] (get-default rule)))
     (++ j)))
 
 (defn- check-subcommand
