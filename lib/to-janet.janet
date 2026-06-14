@@ -43,7 +43,7 @@
                                  (cmt :name ,key-qmark)
                                  (? (cmt (some (* :s+ :tag-attrs)) ,tag-attrs))
                                  "?>"))
-                 :text '(to (+ "<" ">" -1))
+                 :text '(to (+ "<" -1))
                  }))
 
 (def- void-elements
