@@ -18,16 +18,16 @@ markup. By default, the markup is HTML. If not, `:format` can be set to
 
 If `:indent` is a number, the markup is pretty printed with that many spaces
 of leading indentation and `:tab` (two spaces by default) added for each
-level of nesting. Newlines are only introduced between children where they
+level of nesting. A newline is only introduced between two nodes where it
 cannot change how the markup is interpreted, so the contents of elements
 like `<p>` and `<pre>` are left alone. If `:indent` is nil, no whitespace is
-added.
+added at all.
 
 A `<!doctype html>` declaration is added ahead of a top-level `:html`
 element unless `:add-doctype?` is set to false or the data structure
 already carries a declaration of its own.
 
-[1]: lib/to-markup.janet#L110
+[1]: lib/to-markup.janet#L113
 
 
 ## janet-&gt;source

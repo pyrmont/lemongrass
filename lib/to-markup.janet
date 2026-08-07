@@ -84,10 +84,13 @@
           (buffer/push res " " k `="` v `"`))
         (++ i))
       (if (= i (length ds))
-        (buffer/push res (cond
-                           (elements/instruction? name) "?>"
-                           (= :xml format) "/>"
-                           ">"))
+        (cond
+          (elements/instruction? name) (buffer/push res "?>")
+          (= :xml format) (buffer/push res "/>")
+          (elements/void? name) (buffer/push res ">")
+          # an HTML element that is not void still needs its closing tag,
+          # whether or not it has any children
+          (buffer/push res "></" name ">"))
         (do
           (buffer/push res ">")
           (def break? (and indent (not pre?) (breakable? ds i format)))
@@ -117,10 +120,10 @@
 
   If `:indent` is a number, the markup is pretty printed with that many spaces
   of leading indentation and `:tab` (two spaces by default) added for each
-  level of nesting. Newlines are only introduced between children where they
+  level of nesting. A newline is only introduced between two nodes where it
   cannot change how the markup is interpreted, so the contents of elements
   like `<p>` and `<pre>` are left alone. If `:indent` is nil, no whitespace is
-  added.
+  added at all.
 
   A `<!doctype html>` declaration is added ahead of a top-level `:html`
   element unless `:add-doctype?` is set to false or the data structure
@@ -142,10 +145,15 @@
     (truthy? (some (fn [node]
                      (and (indexed? node) (elements/declaration? (first node))))
                    nodes)))
-  (var newline "")
+  (var prev nil)
   (each node nodes
-    (buffer/push res newline)
-    (when prefix (buffer/push res prefix))
+    # the whitespace between two top-level nodes is subject to the same rule
+    # as the whitespace between two children, and is only added at all when
+    # the markup is being laid out
+    (if (nil? prev)
+      (when prefix (buffer/push res prefix))
+      (when (and prefix (break-before? prev node format))
+        (buffer/push res "\n" prefix)))
     (when (and add-doctype?
                (not declared?)
                (= :html format)
@@ -154,5 +162,5 @@
       (buffer/push res "<!doctype html>")
       (when prefix (buffer/push res "\n" prefix)))
     (node->markup node res format prefix tab false)
-    (set newline "\n"))
+    (set prev node))
   res)

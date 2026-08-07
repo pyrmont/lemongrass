@@ -143,9 +143,40 @@
   (def indented (string (to-markup/janet->markup janet :indent 0)))
   (is (== janet (to-janet/markup->janet indented))))
 
+(deftest empty-elements-are-closed
+  (is (== "<div></div>" (to-markup/janet->markup @[:div])))
+  (is (== `<div class="x"></div>` (to-markup/janet->markup @[:div {:class "x"}]))))
+
+(deftest void-elements-are-not-closed
+  (is (== "<br>" (to-markup/janet->markup @[:br])))
+  (is (== `<img src="x.png">` (to-markup/janet->markup @[:img {:src "x.png"}]))))
+
+(deftest empty-elements-round-trip
+  (def janet @[:html @[:body]])
+  (def markup (string (to-markup/janet->markup janet :add-doctype? false)))
+  (is (== janet (to-janet/markup->janet markup))))
+
+(deftest inline-top-level-nodes-are-not-separated
+  (def janet [[:span "a"] [:span "b"]])
+  (is (== "<span>a</span><span>b</span>"
+          (to-markup/janet->markup janet :indent 0))))
+
+(deftest block-top-level-nodes-are-separated
+  (def janet [[:div "a"] [:div "b"]])
+  (is (== "<div>a</div>\n<div>b</div>"
+          (to-markup/janet->markup janet :indent 0))))
+
 (deftest no-indent-adds-no-whitespace
   (def janet @[:div @[:p "a"] @[:p "b"]])
   (def actual (to-markup/janet->markup janet))
   (is (== "<div><p>a</p><p>b</p></div>" actual)))
+
+(deftest compact-output-reproduces-the-source
+  (def src
+    (string "<!doctype html><html><head><title>T</title></head>"
+            `<body><div></div><p>A <em>note</em>.</p><img src="x.png"><br>`
+            "</body></html>"))
+  (def janet (to-janet/markup->janet src))
+  (is (== src (string (to-markup/janet->markup janet)))))
 
 (run-tests!)
