@@ -44,6 +44,28 @@
       "Two"]`)
   (is (== expect actual)))
 
+(deftest block-children-are-always-broken-open
+  (def janet @[:ul @[:li "One"] @[:li "Two"]])
+  (def expect
+    `@[:ul
+      @[:li "One"]
+      @[:li "Two"]]`)
+  (is (== expect (lg/janet->source janet))))
+
+(deftest inline-children-are-kept-together
+  (def janet @[:p "A " @[:em "short"] " note."])
+  (is (== `@[:p "A " @[:em "short"] " note."]` (lg/janet->source janet))))
+
+(deftest unknown-elements-are-treated-as-inline
+  (def janet @[:config @[:host "localhost"] @[:port "8080"]])
+  (is (== `@[:config @[:host "localhost"] @[:port "8080"]]`
+          (lg/janet->source janet))))
+
+(deftest an-unreachable-width-gives-the-compact-form
+  (def janet @[:div @[:ul @[:li "One"] @[:li "Two"]]])
+  (is (== `@[:div @[:ul @[:li "One"] @[:li "Two"]]]`
+          (lg/janet->source janet :width math/inf))))
+
 (deftest source-evaluates-back-to-the-data-structure
   (def janet
     @[:html

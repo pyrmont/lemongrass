@@ -18,12 +18,37 @@
                             :kind    :single
                             :proxy   "path"
                             :short   "o"}
+           "--pretty"      {:default false
+                            :help    "Pretty print the output over multiple lines."
+                            :kind    :flag
+                            :short   "p"}
            "--reverse"     {:default false
                             :help    "Reverse the polarity and convert from Janet to markup."
                             :kind    :flag
                             :short   "r"}
            "-------------------------------------------"]
    :info {:about "Convert from HTML/XML to Janet data structures."}})
+
+
+(defn convert
+  ```
+  Converts a string of `input` and returns the result as a string
+
+  By default a string of markup is converted to a Hiccup-style Janet data
+  structure. If `to-markup?` is true, the conversion runs the other way and
+  `input` is read as Janet source. `html?` selects the markup language and
+  `pretty?` lays the output out over several lines rather than one.
+  ```
+  [input &named to-markup? html? pretty?]
+  (default html? true)
+  (string
+    (if to-markup?
+      (lg/janet->markup (eval-string input)
+                        :format (if html? :html :xml)
+                        :indent (when pretty? 0))
+      (lg/janet->source (lg/markup->janet input :html? html?)
+                        # an unreachable width keeps the output on one line
+                        :width (if pretty? 80 math/inf)))))
 
 
 (defn run []
@@ -49,15 +74,14 @@
       (def input (if (= :stdin i-path)
                    (file/read stdin :all)
                    (slurp i-path)))
-      (def to-markup? (opts "reverse"))
-      (def html? (= "html" (opts "format")))
-      (def output (if to-markup?
-                    (lg/janet->markup (eval-string input))
-                    (lg/markup->janet input :html? html?)))
+      (def output (convert input
+                           :to-markup? (opts "reverse")
+                           :html? (= "html" (opts "format"))
+                           :pretty? (opts "pretty")))
       (def o-path (opts "output"))
       (if (= :stdout o-path)
-        (pp output)
+        (print output)
         (spit o-path output)))))
 
 
-(defn main [& args] (run))
+(defn main [&] (run))

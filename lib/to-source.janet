@@ -1,3 +1,21 @@
+(import ./elements)
+
+(defn- block-child?
+  ```
+  Checks whether any child of `x` is an element that starts a block of its own
+
+  Such a child is given a line of its own however short it is, so that the
+  shape of the source follows the shape of the markup it stands for. An
+  element whose children are all text or inline elements is laid out on one
+  line where it fits, exactly as the markup would be.
+  ```
+  [x]
+  (and (indexed? x)
+       (truthy? (some (fn [child]
+                        (and (indexed? child)
+                             (not (elements/inline? (first child)))))
+                      x))))
+
 (defn- compact
   ```
   Renders `x` as Janet source on a single line
@@ -30,8 +48,11 @@
   [x res indent tab width]
   (def flat (compact x))
   (def child-indent (string indent tab))
+  # an unreachable width asks for the compact form, so nothing is broken open
+  (def laid-out? (not= math/inf width))
   (cond
-    (<= (+ (length indent) (length flat)) width)
+    (and (<= (+ (length indent) (length flat)) width)
+         (not (and laid-out? (block-child? x))))
     (buffer/push res flat)
 
     (indexed? x)
@@ -76,9 +97,13 @@
 
   This function takes a Hiccup-style Janet data structure and pretty prints it
   as Janet source. An element is put on one line if it fits within `:width`
-  columns (80 by default); otherwise its tag (and its attributes, if they fit
-  too) stay on the opening line and its children are placed beneath it,
-  indented by `:tab` (two spaces by default) for each level of nesting.
+  columns (80 by default) and none of its children starts a block of its own;
+  otherwise its tag (and its attributes, if they fit too) stay on the opening
+  line and its children are placed beneath it, indented by `:tab` (two spaces
+  by default) for each level of nesting.
+
+  Setting `:width` to `math/inf` asks for the compact form, which is the whole
+  data structure on a single line.
   ```
   [ds &keys {:tab tab :width width}]
   (default tab "  ")

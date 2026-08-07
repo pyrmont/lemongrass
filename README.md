@@ -52,8 +52,10 @@ interpreted:
 # out> </div>
 ```
 
-Hiccup is pretty printed as Janet source with `janet->source`, which keeps an
-element on one line if it fits within `:width` columns:
+Hiccup is pretty printed as Janet source with `janet->source`. An element is
+kept on one line where it fits within `:width` columns and holds nothing but
+text and inline elements, so the shape of the source follows the shape of the
+markup:
 
 ```janet
 (print (lemongrass/janet->source
@@ -82,7 +84,7 @@ Run `lg --help` for usage information:
 
 ```
 $ lg --help
-Usage: lg [--format <format>] [--output <path>] [--reverse] [<input>]
+Usage: lg [--format <format>] [--output <path>] [--pretty] [--reverse] [<input>]
 
 Convert from HTML/XML to Janet data structures.
 
@@ -94,9 +96,27 @@ Options:
 
  -f, --format <format>    The <format> of the markup, either html or xml. (Default: html)
  -o, --output <path>      The <path> for the output file. (Default: stdout)
+ -p, --pretty             Pretty print the output over multiple lines.
  -r, --reverse            Reverse the polarity and convert from Janet to markup.
 
  -h, --help               Show this help message.
+```
+
+Output is written on a single line unless `--pretty` is given, and even then
+an element holding only text and inline elements is left on one line where it
+fits within 80 columns:
+
+```shell
+$ cat page.html
+<div class="wrap"><h1>Hello</h1><p>Some <em>text</em> and more.</p><ul><li>One</li><li>Two</li></ul></div>
+
+$ lg --pretty page.html
+@[:div @{:class "wrap"}
+  @[:h1 "Hello"]
+  @[:p "Some " @[:em "text"] " and more."]
+  @[:ul
+    @[:li "One"]
+    @[:li "Two"]]]
 ```
 
 ## Bugs

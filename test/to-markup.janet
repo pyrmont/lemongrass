@@ -143,6 +143,22 @@
   (def indented (string (to-markup/janet->markup janet :indent 0)))
   (is (== janet (to-janet/markup->janet indented))))
 
+(deftest unknown-elements-are-treated-as-inline
+  # a browser lays out an element it does not recognise inline, so a newline
+  # beside one would be rendered
+  (def janet @[:div @[:my-widget "a"] @[:my-widget "b"]])
+  (is (== "<div><my-widget>a</my-widget><my-widget>b</my-widget></div>"
+          (to-markup/janet->markup janet :indent 0))))
+
+(deftest unknown-elements-still-break-beside-a-block
+  (def janet @[:div @[:my-widget "a"] @[:p "b"]])
+  (def expect
+    `<div>
+      <my-widget>a</my-widget>
+      <p>b</p>
+    </div>`)
+  (is (== expect (to-markup/janet->markup janet :indent 0))))
+
 (deftest empty-elements-are-closed
   (is (== "<div></div>" (to-markup/janet->markup @[:div])))
   (is (== `<div class="x"></div>` (to-markup/janet->markup @[:div {:class "x"}]))))

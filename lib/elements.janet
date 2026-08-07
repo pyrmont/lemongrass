@@ -13,22 +13,25 @@
    :input true :keygen true :link true :meta true :param true :source true
    :track true :wbr true})
 
-(def- inline-elements
+(def- block-elements
   ```
-  Elements for which surrounding whitespace is significant
+  Elements that start a block of their own
 
-  Whitespace between these elements (or between one of them and adjacent text)
-  is rendered, so it cannot be added or removed without changing the document.
+  Whitespace beside one of these is discarded when the markup is rendered, so
+  it can be added or removed freely. Every other element takes part in the
+  surrounding line of text instead, which is also what an element not named
+  here does: an element the browser does not recognise is laid out inline.
   ```
-  {:a true :abbr true :acronym true :audio true :b true :bdi true :bdo true
-   :big true :br true :button true :canvas true :cite true :code true
-   :data true :datalist true :del true :dfn true :em true :embed true :i true
-   :iframe true :img true :input true :ins true :kbd true :label true
-   :map true :mark true :meter true :noscript true :object true :output true
-   :picture true :progress true :q true :ruby true :s true :samp true
-   :select true :slot true :small true :span true :strong true :sub true
-   :sup true :svg true :template true :textarea true :time true :tt true
-   :u true :var true :video true :wbr true})
+  {:address true :article true :aside true :base true :blockquote true
+   :body true :caption true :col true :colgroup true :dd true :details true
+   :dialog true :div true :dl true :dt true :fieldset true :figcaption true
+   :figure true :footer true :form true :h1 true :h2 true :h3 true :h4 true
+   :h5 true :h6 true :head true :header true :hgroup true :hr true :html true
+   :legend true :li true :link true :main true :menu true :meta true
+   :nav true :noframes true :ol true :optgroup true :option true :p true
+   :param true :pre true :script true :section true :source true :style true
+   :summary true :table true :tbody true :td true :tfoot true :th true
+   :thead true :title true :tr true :track true :ul true})
 
 (def- preformatted-elements
   ```
@@ -42,14 +45,6 @@
   ```
   [name]
   (truthy? (get void-elements name)))
-
-(defn inline?
-  ```
-  Checks whether `name` is the name of an element that whitespace is
-  significant beside
-  ```
-  [name]
-  (truthy? (get inline-elements name)))
 
 (defn preformatted?
   ```
@@ -72,3 +67,20 @@
   ```
   [name]
   (and (bytes? name) (string/has-prefix? "?" name)))
+
+(defn inline?
+  ```
+  Checks whether `name` is the name of an element that whitespace is
+  significant beside
+
+  A declaration or a processing instruction never is. Neither is an element
+  that starts a block of its own. Anything else is treated as inline, an
+  element the browser does not recognise included, because that is how one is
+  laid out. Erring this way costs no more than a missed chance to break a
+  line, whereas erring the other way would put whitespace into a document
+  that renders it.
+  ```
+  [name]
+  (not (or (declaration? name)
+           (instruction? name)
+           (truthy? (get block-elements name)))))

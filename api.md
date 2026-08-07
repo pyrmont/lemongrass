@@ -42,11 +42,15 @@ Converts a Janet data structure to a string of Janet source
 
 This function takes a Hiccup-style Janet data structure and pretty prints it
 as Janet source. An element is put on one line if it fits within `:width`
-columns (80 by default); otherwise its tag (and its attributes, if they fit
-too) stay on the opening line and its children are placed beneath it,
-indented by `:tab` (two spaces by default) for each level of nesting.
+columns (80 by default) and none of its children starts a block of its own;
+otherwise its tag (and its attributes, if they fit too) stay on the opening
+line and its children are placed beneath it, indented by `:tab` (two spaces
+by default) for each level of nesting.
 
-[2]: lib/to-source.janet#L73
+Setting `:width` to `math/inf` asks for the compact form, which is the whole
+data structure on a single line.
+
+[2]: lib/to-source.janet#L94
 
 
 ## markup-&gt;janet
