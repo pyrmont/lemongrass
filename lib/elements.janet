@@ -23,21 +23,28 @@
   here does: an element the browser does not recognise is laid out inline.
   ```
   {:address true :article true :aside true :base true :blockquote true
-   :body true :caption true :col true :colgroup true :dd true :details true
-   :dialog true :div true :dl true :dt true :fieldset true :figcaption true
-   :figure true :footer true :form true :h1 true :h2 true :h3 true :h4 true
-   :h5 true :h6 true :head true :header true :hgroup true :hr true :html true
-   :legend true :li true :link true :main true :menu true :meta true
-   :nav true :noframes true :ol true :optgroup true :option true :p true
-   :param true :pre true :script true :section true :source true :style true
+   :body true :caption true :center true :col true :colgroup true :dd true
+   :details true :dialog true :dir true :div true :dl true :dt true
+   :fieldset true :figcaption true :figure true :footer true :form true
+   :frame true :frameset true :h1 true :h2 true :h3 true :h4 true :h5 true
+   :h6 true :head true :header true :hgroup true :hr true :html true
+   :legend true :li true :link true :listing true :main true :menu true
+   :meta true :multicol true :nav true :noframes true :ol true
+   :optgroup true :option true :p true :param true :plaintext true :pre true
+   :script true :search true :section true :source true :style true
    :summary true :table true :tbody true :td true :tfoot true :th true
-   :thead true :title true :tr true :track true :ul true})
+   :thead true :title true :tr true :track true :ul true :xmp true})
 
 (def- preformatted-elements
   ```
   Elements whose entire contents are reproduced verbatim
+
+  The deprecated listing, plaintext and xmp elements are laid out like pre, so
+  naming them as blocks without naming them here would let their contents be
+  indented.
   ```
-  {:pre true :script true :style true :textarea true})
+  {:listing true :plaintext true :pre true :script true :style true
+   :textarea true :xmp true})
 
 (defn void?
   ```

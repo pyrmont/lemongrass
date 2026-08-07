@@ -143,6 +143,25 @@
   (def indented (string (to-markup/janet->markup janet :indent 0)))
   (is (== janet (to-janet/markup->janet indented))))
 
+(deftest deprecated-blocks-are-laid-out
+  (def janet @[:div @[:center "a"] @[:center "b"]])
+  (def expect
+    `<div>
+      <center>a</center>
+      <center>b</center>
+    </div>`)
+  (is (== expect (to-markup/janet->markup janet :indent 0))))
+
+(deftest deprecated-preformatted-content-is-left-alone
+  (def janet @[:div @[:xmp "one\n  two"] @[:p "after"]])
+  (def expect
+    `<div>
+      <xmp>one
+      two</xmp>
+      <p>after</p>
+    </div>`)
+  (is (== expect (to-markup/janet->markup janet :indent 0))))
+
 (deftest unknown-elements-are-treated-as-inline
   # a browser lays out an element it does not recognise inline, so a newline
   # beside one would be rendered
