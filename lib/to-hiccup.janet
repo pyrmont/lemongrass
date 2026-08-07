@@ -68,13 +68,13 @@
           (elements/instruction? name)
           (and html? (elements/void? name))))))
 
-(defn markup->janet
+(defn markup->hiccup
   ```
-  Converts a string of markup to a Janet data structure
+  Converts a string of markup to a Hiccup data structure
 
-  This function takes a string of markup and converts it to a Hiccup-style
-  data structure in Janet. By default, the string is assumed to be HTML. If
-  not, `:html?` can be set to false.
+  This function takes a string of markup and converts it to a Hiccup data
+  structure. By default, the string is assumed to be HTML. If not, `:html?`
+  can be set to false.
   ```
   [s &keys {:html? html?}]
   (default html? true)
@@ -126,3 +126,9 @@
   (if (one? (length res))
     (first res)
     res))
+
+(def markup->janet
+  ```
+  An alias for `markup->hiccup`
+  ```
+  markup->hiccup)

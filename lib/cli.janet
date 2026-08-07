@@ -29,7 +29,7 @@
                             :proxy   "path"
                             :short   "o"}
            "--reverse"     {:default false
-                            :help    "Reverse the polarity and convert from Janet to markup."
+                            :help    "Reverse the polarity and convert from Hiccup to markup."
                             :kind    :flag
                             :short   "r"}
            "-------------------------------------------"
@@ -44,28 +44,29 @@
                             :short   "i"
                             :value   (at-least 0)}
            "--width"       {:default 80
-                            :help    "The <number> of columns an element is fitted within when pretty printing to Janet."
+                            :help    "The <number> of columns an element is fitted within when pretty printing Hiccup."
                             :kind    :single
                             :proxy   "number"
                             :short   "w"
                             :value   (at-least 1)}
            "-------------------------------------------"]
-   :info {:about "Convert from HTML/XML to Janet data structures."}})
+   :info {:about "Convert from HTML/XML to Hiccup data structures."}})
 
 
 (defn convert
   ```
   Converts a string of `input` and returns the result as a string
 
-  By default a string of markup is converted to a Hiccup-style Janet data
-  structure. If `to-markup?` is true, the conversion runs the other way and
-  `input` is read as Janet source. `html?` selects the markup language and
-  `pretty?` lays the output out over several lines rather than one.
+  By default a string of markup is converted to a Hiccup data structure. If
+  `to-markup?` is true, the conversion runs the other way and `input` is read
+  as the Janet source of a Hiccup data structure. `html?` selects the markup
+  language and `pretty?` lays the output out over several lines rather than
+  one.
 
   When the output is pretty printed, `indent` is the number of spaces (two by
   default) added for each level of nesting and `width` is the number of columns
   (80 by default) an element is fitted within before it is broken open. Only
-  Janet output is fitted to a width, so `width` is ignored if `to-markup?` is
+  Hiccup output is fitted to a width, so `width` is ignored if `to-markup?` is
   true.
   ```
   [input &named to-markup? html? pretty? indent width]
@@ -75,14 +76,14 @@
   (def tab (string/repeat " " indent))
   (string
     (if to-markup?
-      (lg/janet->markup (eval-string input)
-                        :format (if html? :html :xml)
-                        :indent (when pretty? 0)
-                        :tab tab)
-      (lg/janet->source (lg/markup->janet input :html? html?)
-                        :tab tab
-                        # an unreachable width keeps the output on one line
-                        :width (if pretty? width math/inf)))))
+      (lg/hiccup->markup (eval-string input)
+                         :format (if html? :html :xml)
+                         :indent (when pretty? 0)
+                         :tab tab)
+      (lg/hiccup->source (lg/markup->hiccup input :html? html?)
+                         :tab tab
+                         # an unreachable width keeps the output on one line
+                         :width (if pretty? width math/inf)))))
 
 
 (defn run []

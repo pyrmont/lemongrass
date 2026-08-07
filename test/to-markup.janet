@@ -1,7 +1,7 @@
 (use ../deps/testament)
 
 (import ../lib/to-markup)
-(import ../lib/to-janet)
+(import ../lib/to-hiccup)
 
 (deftest basic-html
   (def janet
@@ -10,7 +10,7 @@
         @[:title "Hello HTML!"]]
       @[:body
         @[:h1 "Hello world!"]]])
-  (def actual (to-markup/janet->markup janet :indent 0))
+  (def actual (to-markup/hiccup->markup janet :indent 0))
   (def expect
     `<!doctype html>
     <html>
@@ -30,7 +30,7 @@
                  [:title "Hello RSS!"]]
                 [:item
                  [:description "Hello world!"]]]])
-  (def actual (to-markup/janet->markup janet :format :xml :indent 0))
+  (def actual (to-markup/hiccup->markup janet :format :xml :indent 0))
   (def expect
     `<?xml encoding="UTF-8" version="1.0"?>
     <rss version="2.0">
@@ -48,7 +48,7 @@
     @[:div
       @[:p "Hello " @[:em "there"] " friend."]
       @[:p "Bye."]])
-  (def actual (to-markup/janet->markup janet :indent 0))
+  (def actual (to-markup/hiccup->markup janet :indent 0))
   (def expect
     `<div>
       <p>Hello <em>there</em> friend.</p>
@@ -61,7 +61,7 @@
     @[:div
       @[:pre @[:code "one\n  two"]]
       @[:p "after"]])
-  (def actual (to-markup/janet->markup janet :indent 0))
+  (def actual (to-markup/hiccup->markup janet :indent 0))
   (def expect
     `<div>
       <pre><code>one
@@ -72,7 +72,7 @@
 
 (deftest nested-xml
   (def janet [:root [:branch [:leaf] [:leaf {:n "2"}]]])
-  (def actual (to-markup/janet->markup janet :format :xml :indent 0))
+  (def actual (to-markup/hiccup->markup janet :format :xml :indent 0))
   (def expect
     `<root>
       <branch>
@@ -84,7 +84,7 @@
 
 (deftest custom-tab
   (def janet @[:div @[:section @[:p "hi"]]])
-  (def actual (to-markup/janet->markup janet :indent 0 :tab "\t"))
+  (def actual (to-markup/hiccup->markup janet :indent 0 :tab "\t"))
   (def expect "<div>\n\t<section>\n\t\t<p>hi</p>\n\t</section>\n</div>")
   (is (== expect actual)))
 
@@ -95,7 +95,7 @@
       @[:img {:src "x.png"}]
       @[:br]
       @[:p "End."]])
-  (def actual (to-markup/janet->markup janet :indent 0))
+  (def actual (to-markup/hiccup->markup janet :indent 0))
   (def expect
     `<main>
       <h1>Title</h1>
@@ -110,17 +110,17 @@
             "<ul><li>One</li><li>Two</li></ul>"
             `<p>A <a href="#">link</a> and an <img src="x.png"> image.</p>`
             "<pre>  keep\n  me</pre></div>"))
-  (def janet (to-janet/markup->janet src))
-  (def indented (string (to-markup/janet->markup janet :indent 0)))
-  (is (== janet (to-janet/markup->janet indented))))
+  (def janet (to-hiccup/markup->hiccup src))
+  (def indented (string (to-markup/hiccup->markup janet :indent 0)))
+  (is (== janet (to-hiccup/markup->hiccup indented))))
 
 (deftest declaration
   (def janet @[:!doctype "html"])
-  (is (== "<!doctype html>" (to-markup/janet->markup janet))))
+  (is (== "<!doctype html>" (to-markup/hiccup->markup janet))))
 
 (deftest declaration-suppresses-the-added-doctype
   (def janet [@[:!doctype "html"] @[:html @[:body @[:p "hi"]]]])
-  (def actual (to-markup/janet->markup janet :indent 0))
+  (def actual (to-markup/hiccup->markup janet :indent 0))
   (def expect
     `<!doctype html>
     <html>
@@ -132,16 +132,16 @@
 
 (deftest instruction-closes-as-an-instruction
   (def janet [:?xml {:version "1.0"}])
-  (is (== `<?xml version="1.0"?>` (to-markup/janet->markup janet))))
+  (is (== `<?xml version="1.0"?>` (to-markup/hiccup->markup janet))))
 
 (deftest full-document-round-trip
   (def src
     (string "<!doctype html><html><head><title>T</title></head>"
             `<body><p>A <em>note</em>.</p><img src="x.png"><br><p>End.</p>`
             "</body></html>"))
-  (def janet (to-janet/markup->janet src))
-  (def indented (string (to-markup/janet->markup janet :indent 0)))
-  (is (== janet (to-janet/markup->janet indented))))
+  (def janet (to-hiccup/markup->hiccup src))
+  (def indented (string (to-markup/hiccup->markup janet :indent 0)))
+  (is (== janet (to-hiccup/markup->hiccup indented))))
 
 (deftest deprecated-blocks-are-laid-out
   (def janet @[:div @[:center "a"] @[:center "b"]])
@@ -150,7 +150,7 @@
       <center>a</center>
       <center>b</center>
     </div>`)
-  (is (== expect (to-markup/janet->markup janet :indent 0))))
+  (is (== expect (to-markup/hiccup->markup janet :indent 0))))
 
 (deftest deprecated-preformatted-content-is-left-alone
   (def janet @[:div @[:xmp "one\n  two"] @[:p "after"]])
@@ -160,14 +160,14 @@
       two</xmp>
       <p>after</p>
     </div>`)
-  (is (== expect (to-markup/janet->markup janet :indent 0))))
+  (is (== expect (to-markup/hiccup->markup janet :indent 0))))
 
 (deftest unknown-elements-are-treated-as-inline
   # a browser lays out an element it does not recognise inline, so a newline
   # beside one would be rendered
   (def janet @[:div @[:my-widget "a"] @[:my-widget "b"]])
   (is (== "<div><my-widget>a</my-widget><my-widget>b</my-widget></div>"
-          (to-markup/janet->markup janet :indent 0))))
+          (to-markup/hiccup->markup janet :indent 0))))
 
 (deftest unknown-elements-still-break-beside-a-block
   (def janet @[:div @[:my-widget "a"] @[:p "b"]])
@@ -176,34 +176,34 @@
       <my-widget>a</my-widget>
       <p>b</p>
     </div>`)
-  (is (== expect (to-markup/janet->markup janet :indent 0))))
+  (is (== expect (to-markup/hiccup->markup janet :indent 0))))
 
 (deftest empty-elements-are-closed
-  (is (== "<div></div>" (to-markup/janet->markup @[:div])))
-  (is (== `<div class="x"></div>` (to-markup/janet->markup @[:div {:class "x"}]))))
+  (is (== "<div></div>" (to-markup/hiccup->markup @[:div])))
+  (is (== `<div class="x"></div>` (to-markup/hiccup->markup @[:div {:class "x"}]))))
 
 (deftest void-elements-are-not-closed
-  (is (== "<br>" (to-markup/janet->markup @[:br])))
-  (is (== `<img src="x.png">` (to-markup/janet->markup @[:img {:src "x.png"}]))))
+  (is (== "<br>" (to-markup/hiccup->markup @[:br])))
+  (is (== `<img src="x.png">` (to-markup/hiccup->markup @[:img {:src "x.png"}]))))
 
 (deftest empty-elements-round-trip
   (def janet @[:html @[:body]])
-  (def markup (string (to-markup/janet->markup janet :add-doctype? false)))
-  (is (== janet (to-janet/markup->janet markup))))
+  (def markup (string (to-markup/hiccup->markup janet :add-doctype? false)))
+  (is (== janet (to-hiccup/markup->hiccup markup))))
 
 (deftest inline-top-level-nodes-are-not-separated
   (def janet [[:span "a"] [:span "b"]])
   (is (== "<span>a</span><span>b</span>"
-          (to-markup/janet->markup janet :indent 0))))
+          (to-markup/hiccup->markup janet :indent 0))))
 
 (deftest block-top-level-nodes-are-separated
   (def janet [[:div "a"] [:div "b"]])
   (is (== "<div>a</div>\n<div>b</div>"
-          (to-markup/janet->markup janet :indent 0))))
+          (to-markup/hiccup->markup janet :indent 0))))
 
 (deftest no-indent-adds-no-whitespace
   (def janet @[:div @[:p "a"] @[:p "b"]])
-  (def actual (to-markup/janet->markup janet))
+  (def actual (to-markup/hiccup->markup janet))
   (is (== "<div><p>a</p><p>b</p></div>" actual)))
 
 (deftest compact-output-reproduces-the-source
@@ -211,7 +211,7 @@
     (string "<!doctype html><html><head><title>T</title></head>"
             `<body><div></div><p>A <em>note</em>.</p><img src="x.png"><br>`
             "</body></html>"))
-  (def janet (to-janet/markup->janet src))
-  (is (== src (string (to-markup/janet->markup janet)))))
+  (def janet (to-hiccup/markup->hiccup src))
+  (is (== src (string (to-markup/hiccup->markup janet)))))
 
 (run-tests!)

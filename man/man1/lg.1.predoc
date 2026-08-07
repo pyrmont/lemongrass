@@ -9,7 +9,7 @@ Version: DEVEL
 NAME
 ====
 
-**lg** - convert between markup and Janet data structures
+**lg** - convert between markup and Hiccup data structures
 
 SYNOPSIS
 ========
@@ -22,9 +22,10 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**lg** converts a markup language like HTML or XML into a Janet data structure
-written in __Hiccup syntax__. With **--reverse**, the conversion runs the other
-way and a Janet data structure is converted into markup.
+**lg** converts a markup language like HTML or XML into a __Hiccup__ data
+structure, which it writes out as Janet source. With **--reverse**, the
+conversion runs the other way and a Hiccup data structure is converted into
+markup.
 
 Input is read from the file at _input_, or from stdin if _input_ is not given.
 Output is written to stdout unless **--output** names a file.
@@ -55,20 +56,21 @@ Options
   written on a single line.
 
 - **-r** | **--reverse**:
-  Reverses the polarity and converts from Janet to markup. The input is read as
-  Janet source rather than as markup. See `<CAVEATS>` below.
+  Reverses the polarity and converts from Hiccup to markup. The input is read
+  as the Janet source of a Hiccup data structure rather than as markup. See
+  `<CAVEATS>` below.
 
 - **-w** _number_ | **--width** _number_:
   The _number_ of columns an element is fitted within before it is broken open
-  when pretty printing. The default is 80. Only Janet output is fitted to a
+  when pretty printing. The default is 80. Only Hiccup output is fitted to a
   width, so this option is ignored when **--reverse** is given.
 
 Hiccup Syntax
 -------------
 
-__Hiccup syntax__ represents an element as an array whose first value is a
-keyword naming the element. An optional table of attributes may follow, and
-everything after that is a child of the element. So the markup:
+__Hiccup__ represents an element as an array whose first value is a keyword
+naming the element. An optional table of attributes may follow, and everything
+after that is a child of the element. So the markup:
 
 ````
 <h1 class="title">Hello <em>world</em></h1>
@@ -83,13 +85,13 @@ is represented as:
 Pretty Printing
 ---------------
 
-When markup is converted to Janet, an element is kept on one line where it fits
-within **--width** columns and none of its children starts a block of its own.
-Otherwise its children are placed beneath it, each indented by a further
+When markup is converted to Hiccup, an element is kept on one line where it
+fits within **--width** columns and none of its children starts a block of its
+own. Otherwise its children are placed beneath it, each indented by a further
 **--indent** spaces. The shape of the source therefore follows the shape of the
 markup it stands for.
 
-When Janet is converted to markup, a newline is only introduced between two
+When Hiccup is converted to markup, a newline is only introduced between two
 nodes where it cannot change how the markup is interpreted. The contents of
 elements like ``<p>`` and ``<pre>`` are left alone, so the pretty printed markup
 renders the same as the markup written on a single line.
@@ -97,7 +99,7 @@ renders the same as the markup written on a single line.
 EXAMPLES
 ========
 
-To convert a file of HTML to a Janet data structure:
+To convert a file of HTML to a Hiccup data structure:
 
 ````
 $ lg page.html
@@ -116,7 +118,7 @@ each level of nesting by 4 spaces:
 $ lg -p -w 40 -i 4 page.html
 ````
 
-To convert a Janet data structure back to HTML:
+To convert a Hiccup data structure back to HTML:
 
 ````
 $ lg -r page.janet

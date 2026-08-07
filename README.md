@@ -6,8 +6,8 @@
 [status]: https://github.com/pyrmont/lemongrass/actions?query=workflow%3Atest
 
 Lemongrass is a pure Janet library for converting between markup languages like
-HTML and XML and Janet data structures (in [Hiccup syntax][hs]). It comes with
-a CLI utility for converting at the command line.
+HTML and XML and Janet data structures written in [Hiccup syntax][hs]. It comes
+with a CLI utility for converting at the command line.
 
 [hs]: http://weavejester.github.io/hiccup/syntax.html "Read more about Hiccup syntax"
 
@@ -28,10 +28,10 @@ Lemongrass can be used like this:
 ```janet
 (import lemongrass)
 
-(lemongrass/markup->janet `<h1 class="foo">Hello world!</h1>`)
+(lemongrass/markup->hiccup `<h1 class="foo">Hello world!</h1>`)
 # => @[:h1 @{:class "foo"} "Hello world!"]
 
-(lemongrass/janet->markup [:h1 {:class "foo"} "Hello world!"])
+(lemongrass/hiccup->markup [:h1 {:class "foo"} "Hello world!"])
 # => "<h1 class="foo">Hello world!</h1>"
 ```
 
@@ -40,7 +40,7 @@ Both kinds of output can be pretty printed. Markup is indented by passing
 interpreted:
 
 ```janet
-(print (lemongrass/janet->markup
+(print (lemongrass/hiccup->markup
          [:div [:ul [:li "One"] [:li "Two"]] [:p "A " [:em "short"] " note."]]
          :indent 0))
 # out> <div>
@@ -52,14 +52,14 @@ interpreted:
 # out> </div>
 ```
 
-Hiccup is pretty printed as Janet source with `janet->source`. An element is
+Hiccup is pretty printed as Janet source with `hiccup->source`. An element is
 kept on one line where it fits within `:width` columns and holds nothing but
 text and inline elements, so the shape of the source follows the shape of the
 markup:
 
 ```janet
-(print (lemongrass/janet->source
-         (lemongrass/markup->janet `<div><h1>Hi</h1><p>A <em>short</em> note.</p></div>`)
+(print (lemongrass/hiccup->source
+         (lemongrass/markup->hiccup `<div><h1>Hi</h1><p>A <em>short</em> note.</p></div>`)
          :width 40))
 # out> @[:div
 # out>   @[:h1 "Hi"]
@@ -86,7 +86,7 @@ Run `lg --help` for usage information:
 $ lg --help
 Usage: lg [--format <format>] [--output <path>] [--reverse] [--pretty] [--indent <number>] [--width <number>] [<input>]
 
-Convert from HTML/XML to Janet data structures.
+Convert from HTML/XML to Hiccup data structures.
 
 Parameters:
 
@@ -96,11 +96,11 @@ Options:
 
  -f, --format <format>    The <format> of the markup, either html or xml. (Default: html)
  -o, --output <path>      The <path> for the output file. (Default: stdout)
- -r, --reverse            Reverse the polarity and convert from Janet to markup.
+ -r, --reverse            Reverse the polarity and convert from Hiccup to markup.
 
  -p, --pretty             Pretty print the output over multiple lines.
  -i, --indent <number>    The <number> of spaces added for each level of nesting when pretty printing. (Default: 2)
- -w, --width <number>     The <number> of columns an element is fitted within when pretty printing to Janet. (Default: 80)
+ -w, --width <number>     The <number> of columns an element is fitted within when pretty printing Hiccup. (Default: 80)
 
  -h, --help               Show this help message.
 ```
@@ -138,7 +138,7 @@ $ lg --pretty --width 40 --indent 4 page.html
         @[:li "Two"]]]
 ```
 
-`--indent` applies to markup too, but only Janet output is fitted to a width,
+`--indent` applies to markup too, but only Hiccup output is fitted to a width,
 so `--width` is ignored when `--reverse` is given.
 
 ## Bugs

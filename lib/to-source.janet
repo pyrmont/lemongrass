@@ -91,16 +91,16 @@
     # an atom that is too long to fit has to overrun
     (buffer/push res flat)))
 
-(defn janet->source
+(defn hiccup->source
   ```
-  Converts a Janet data structure to a string of Janet source
+  Converts a Hiccup data structure to a string of Janet source
 
-  This function takes a Hiccup-style Janet data structure and pretty prints it
-  as Janet source. An element is put on one line if it fits within `:width`
-  columns (80 by default) and none of its children starts a block of its own;
-  otherwise its tag (and its attributes, if they fit too) stay on the opening
-  line and its children are placed beneath it, indented by `:tab` (two spaces
-  by default) for each level of nesting.
+  This function takes a Hiccup data structure and pretty prints it as Janet
+  source. An element is put on one line if it fits within `:width` columns (80
+  by default) and none of its children starts a block of its own; otherwise its
+  tag (and its attributes, if they fit too) stay on the opening line and its
+  children are placed beneath it, indented by `:tab` (two spaces by default)
+  for each level of nesting.
 
   Setting `:width` to `math/inf` asks for the compact form, which is the whole
   data structure on a single line.
@@ -111,3 +111,9 @@
   (def res @"")
   (value->source ds res "" tab width)
   res)
+
+(def janet->source
+  ```
+  An alias for `hiccup->source`
+  ```
+  hiccup->source)

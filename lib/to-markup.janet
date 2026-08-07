@@ -110,13 +110,12 @@
 
     (error "invalid data structure")))
 
-(defn janet->markup
+(defn hiccup->markup
   ```
-  Converts a Janet data structure to markup
+  Converts a Hiccup data structure to markup
 
-  This function takes a Hiccup-style Janet data structure and converts it to
-  markup. By default, the markup is HTML. If not, `:format` can be set to
-  `:xml`.
+  This function takes a Hiccup data structure and converts it to markup. By
+  default, the markup is HTML. If not, `:format` can be set to `:xml`.
 
   If `:indent` is a number, the markup is pretty printed with that many spaces
   of leading indentation and `:tab` (two spaces by default) added for each
@@ -164,3 +163,9 @@
     (node->markup node res format prefix tab false)
     (set prev node))
   res)
+
+(def janet->markup
+  ```
+  An alias for `hiccup->markup`
+  ```
+  hiccup->markup)
