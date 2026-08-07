@@ -35,6 +35,35 @@ Lemongrass can be used like this:
 # => "<h1 class="foo">Hello world!</h1>"
 ```
 
+Both kinds of output can be pretty printed. Markup is indented by passing
+`:indent`, with newlines added only where they cannot change how the markup is
+interpreted:
+
+```janet
+(print (lemongrass/janet->markup
+         [:div [:ul [:li "One"] [:li "Two"]] [:p "A " [:em "short"] " note."]]
+         :indent 0))
+# out> <div>
+# out>   <ul>
+# out>     <li>One</li>
+# out>     <li>Two</li>
+# out>   </ul>
+# out>   <p>A <em>short</em> note.</p>
+# out> </div>
+```
+
+Hiccup is pretty printed as Janet source with `janet->source`, which keeps an
+element on one line if it fits within `:width` columns:
+
+```janet
+(print (lemongrass/janet->source
+         (lemongrass/markup->janet `<div><h1>Hi</h1><p>A <em>short</em> note.</p></div>`)
+         :width 40))
+# out> @[:div
+# out>   @[:h1 "Hi"]
+# out>   @[:p "A " @[:em "short"] " note."]]
+```
+
 Check out the [API document](api.md) for more information.
 
 ## Utility
