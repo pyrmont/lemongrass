@@ -1,3 +1,5 @@
+(import ./elements)
+
 (defn- key-name [x &opt c]
   (keyword c (string/ascii-lower x)))
 
@@ -46,17 +48,14 @@
                  :text '(to (+ "<" -1))
                  }))
 
-(def- void-elements
-  [:area :base :basefont :bgsound :br :col :command :embed :frame :hr :image
-   :img :input :keygen :link :meta :param :source :track :wbr])
-
 (defn- void?
   ```
   Checks if element is void
 
   Checks if the element is a void element, either because it's marked as
-  such by the final item in the element or because `html?` is true and the
-  element's name matches one of the defined void elements.
+  such by the final item in the element or because it is a declaration or a
+  processing instruction or because `html?` is true and the element's name is
+  the name of a void element.
 
   This function mutates the element to remove the void marker (if present).
   ```
@@ -65,8 +64,9 @@
   (if (true? (get el end))
     (array/remove el end)
     (let [name (first el)]
-      (or (has-value? [33 63] (first name))
-          (and html? (has-value? void-elements (first el)))))))
+      (or (elements/declaration? name)
+          (elements/instruction? name)
+          (and html? (elements/void? name))))))
 
 (defn markup->janet
   ```
@@ -85,12 +85,14 @@
   (var in-pre false)
   (var pos 0)
   (while (< pos (length s))
-    (def [val adv] (peg/match g (string/slice s pos)))
-    (when (zero? adv)
-      (def start (if (> pos 5) (- pos 5) 0))
-      (def end (if (< (length s) (+ pos 5)) (+ pos 5) -1))
+    # `adv` is an index into `s`, not an offset from `pos`, so no progress
+    # means the two are equal
+    (def [val adv] (peg/match g s pos))
+    (when (= pos adv)
+      (def start (max 0 (- pos 5)))
+      (def end (min (length s) (+ pos 5)))
       (error (string "cannot parse around '" (string/slice s start end) "'")))
-    (+= pos adv)
+    (set pos adv)
     (case (type val)
       :string
       (cond

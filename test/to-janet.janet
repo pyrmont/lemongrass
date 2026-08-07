@@ -65,4 +65,18 @@
   (def expect [:a {:href "http://example.com/" :rel "nofollow"} "Foo"])
   (is (== expect actual)))
 
+(deftest doctype
+  (def html `<!doctype html><html><body></body></html>`)
+  (def actual (lg/markup->janet html))
+  (def expect [[:!doctype "html"]
+               [:html
+                [:body]]])
+  (is (== expect actual)))
+
+(deftest unparsable-input-reports-a-short-window
+  (def html (string "<ok>fine</ok><" (string/repeat "x" 500)))
+  (def [ok? err] (protect (lg/markup->janet html)))
+  (is (false? ok?))
+  (is (== `cannot parse around '</ok><xxxx'` err)))
+
 (run-tests!)
