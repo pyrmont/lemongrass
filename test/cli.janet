@@ -45,6 +45,37 @@
   (def actual (lg/convert `<root><br/></root>` :html? false))
   (is (== `@[:root @[:br]]` actual)))
 
+(deftest markup-to-janet-honours-the-width
+  # a narrower width breaks open an element that would otherwise fit
+  (def actual (lg/convert `<div><p>Some <em>text</em> and more.</p></div>`
+                          :pretty? true :width 20))
+  (def expect
+    `@[:div
+      @[:p
+        "Some "
+        @[:em "text"]
+        " and more."]]`)
+  (is (== expect actual)))
+
+(deftest markup-to-janet-honours-the-indent
+  (def actual (lg/convert `<ul><li>One</li><li>Two</li></ul>`
+                          :pretty? true :width 20 :indent 4))
+  (def expect
+    `@[:ul
+        @[:li "One"]
+        @[:li "Two"]]`)
+  (is (== expect actual)))
+
+(deftest janet-to-markup-honours-the-indent
+  (def actual (lg/convert `[:div [:p "Hi"] [:p "Bye"]]`
+                          :to-markup? true :pretty? true :indent 4))
+  (def expect
+    `<div>
+        <p>Hi</p>
+        <p>Bye</p>
+    </div>`)
+  (is (== expect actual)))
+
 (deftest output-is-always-a-string
   (is (string? (lg/convert `<p>Hi</p>`)))
   (is (string? (lg/convert `[:p "Hi"]` :to-markup? true))))

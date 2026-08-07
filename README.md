@@ -84,7 +84,7 @@ Run `lg --help` for usage information:
 
 ```
 $ lg --help
-Usage: lg [--format <format>] [--output <path>] [--pretty] [--reverse] [<input>]
+Usage: lg [--format <format>] [--output <path>] [--reverse] [--pretty] [--indent <number>] [--width <number>] [<input>]
 
 Convert from HTML/XML to Janet data structures.
 
@@ -96,8 +96,11 @@ Options:
 
  -f, --format <format>    The <format> of the markup, either html or xml. (Default: html)
  -o, --output <path>      The <path> for the output file. (Default: stdout)
- -p, --pretty             Pretty print the output over multiple lines.
  -r, --reverse            Reverse the polarity and convert from Janet to markup.
+
+ -p, --pretty             Pretty print the output over multiple lines.
+ -i, --indent <number>    The <number> of spaces added for each level of nesting when pretty printing. (Default: 2)
+ -w, --width <number>     The <number> of columns an element is fitted within when pretty printing to Janet. (Default: 80)
 
  -h, --help               Show this help message.
 ```
@@ -118,6 +121,25 @@ $ lg --pretty page.html
     @[:li "One"]
     @[:li "Two"]]]
 ```
+
+Use `--width` to change the number of columns an element is fitted within and
+`--indent` to change the number of spaces added for each level of nesting:
+
+```shell
+$ lg --pretty --width 40 --indent 4 page.html
+@[:div @{:class "wrap"}
+    @[:h1 "Hello"]
+    @[:p
+        "Some "
+        @[:em "text"]
+        " and more."]
+    @[:ul
+        @[:li "One"]
+        @[:li "Two"]]]
+```
+
+`--indent` applies to markup too, but only Janet output is fitted to a width,
+so `--width` is ignored when `--reverse` is given.
 
 ## Bugs
 
