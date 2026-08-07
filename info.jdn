@@ -1,4 +1,5 @@
 {:name "lemongrass"
+ :version "DEVEL"
  :description "A converter in Janet for markup languages like HTML and XML"
  :author "Michael Camilleri"
  :license "MIT"
@@ -21,4 +22,5 @@
                           :paths ["deps"
                                   "lib"
                                   "init.janet"]}]
+             :manpages ["man/man1/lg.1"]
              :scripts [{:path "bin/lg"}]}}

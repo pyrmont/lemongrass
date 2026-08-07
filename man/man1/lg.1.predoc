@@ -1,0 +1,141 @@
+---
+Title: LG(1)
+Date: 2026-08-07
+Authors: Michael Camilleri <mike@inqk.net>
+Project: Lemongrass
+Version: DEVEL
+---
+
+NAME
+====
+
+**lg** - convert between markup and Janet data structures
+
+SYNOPSIS
+========
+
+**lg** [**-f** _format_ | **--format** _format_] [**-i** _number_ |
+       **--indent** _number_] [**-o** _path_ | **--output** _path_] [**-p** |
+       **--pretty**] [**-r** | **--reverse**] [**-w** _number_ |
+       **--width** _number_] [_input_]
+
+DESCRIPTION
+===========
+
+**lg** converts a markup language like HTML or XML into a Janet data structure
+written in __Hiccup syntax__. With **--reverse**, the conversion runs the other
+way and a Janet data structure is converted into markup.
+
+Input is read from the file at _input_, or from stdin if _input_ is not given.
+Output is written to stdout unless **--output** names a file.
+
+Output is written on a single line unless **--pretty** is given. The options
+that shape the layout, **--indent** and **--width**, have no effect without it.
+More information is set out in `<Pretty Printing>` below.
+
+Options
+-------
+
+- **-f** _format_ | **--format** _format_:
+  The _format_ of the markup, either ``html`` or ``xml``. The default is
+  ``html``. In HTML, the elements that cannot have children are fixed by the
+  language and are written without a closing tag. In XML, nothing is void and
+  an element with no children closes itself.
+
+- **-i** _number_ | **--indent** _number_:
+  The _number_ of spaces added for each level of nesting when pretty printing.
+  The default is 2. This applies whichever way the conversion runs.
+
+- **-o** _path_ | **--output** _path_:
+  Writes the output to the file at _path_. By default, the output is written to
+  stdout.
+
+- **-p** | **--pretty**:
+  Pretty prints the output over multiple lines. By default, the output is
+  written on a single line.
+
+- **-r** | **--reverse**:
+  Reverses the polarity and converts from Janet to markup. The input is read as
+  Janet source rather than as markup. See `<CAVEATS>` below.
+
+- **-w** _number_ | **--width** _number_:
+  The _number_ of columns an element is fitted within before it is broken open
+  when pretty printing. The default is 80. Only Janet output is fitted to a
+  width, so this option is ignored when **--reverse** is given.
+
+Hiccup Syntax
+-------------
+
+__Hiccup syntax__ represents an element as an array whose first value is a
+keyword naming the element. An optional table of attributes may follow, and
+everything after that is a child of the element. So the markup:
+
+````
+<h1 class="title">Hello <em>world</em></h1>
+````
+
+is represented as:
+
+````
+@[:h1 @{:class "title"} "Hello " @[:em "world"]]
+````
+
+Pretty Printing
+---------------
+
+When markup is converted to Janet, an element is kept on one line where it fits
+within **--width** columns and none of its children starts a block of its own.
+Otherwise its children are placed beneath it, each indented by a further
+**--indent** spaces. The shape of the source therefore follows the shape of the
+markup it stands for.
+
+When Janet is converted to markup, a newline is only introduced between two
+nodes where it cannot change how the markup is interpreted. The contents of
+elements like ``<p>`` and ``<pre>`` are left alone, so the pretty printed markup
+renders the same as the markup written on a single line.
+
+EXAMPLES
+========
+
+To convert a file of HTML to a Janet data structure:
+
+````
+$ lg page.html
+````
+
+To read from stdin and write the result to a file:
+
+````
+$ curl -s https://example.org | lg -o page.janet
+````
+
+To pretty print the result, fitting elements within 40 columns and indenting
+each level of nesting by 4 spaces:
+
+````
+$ lg -p -w 40 -i 4 page.html
+````
+
+To convert a Janet data structure back to HTML:
+
+````
+$ lg -r page.janet
+````
+
+To convert a file of XML:
+
+````
+$ lg -f xml doc.xml
+````
+
+CAVEATS
+=======
+
+With **--reverse**, the input is evaluated as Janet source in order to produce
+the data structure that is converted. Any code in the input is therefore run.
+Do not pass input from an untrusted source to **lg** with **--reverse**.
+
+BUGS
+====
+
+Report issues at <https://github.com/pyrmont/lemongrass/issues>
