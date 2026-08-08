@@ -71,7 +71,7 @@ elements, so the shape of the source follows the shape of the markup:
 ```janet
 (print (lemongrass/hiccup->source
          (lemongrass/markup->hiccup `<div><h1>Hi</h1><p>A <em>short</em> note.</p></div>`)
-         :width 40))
+         :indent 2 :width 40))
 # out> @[:div
 # out>   @[:h1 "Hi"]
 # out>   @[:p "A " @[:em "short"] " note."]]

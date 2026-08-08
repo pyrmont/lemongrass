@@ -95,26 +95,22 @@
   ```
   Converts a Hiccup data structure to a string of Janet source
 
-  This function takes a Hiccup data structure and pretty prints it as Janet
-  source. An element is put on one line if it fits within `:width` columns (80
-  by default) and none of its children starts a block of its own; otherwise its
+  This function takes a Hiccup data structure and renders it as Janet source.
+
+  If `:indent` is a number, the source is laid out over several lines. An
+  element is put on one line if it fits within `:width` columns (80 by
+  default) and none of its children starts a block of its own; otherwise its
   tag (and its attributes, if they fit too) stay on the opening line and its
-  children are placed beneath it, indented by `:indent` (2 by default)
-  repetitions of `:step` (a single space by default) for each level of
-  nesting.
+  children are placed beneath it, indented by `:indent` repetitions of `:step`
+  (a single space by default) for each level of nesting. If `:indent` is nil,
+  the whole data structure is put on one line and `:width` is ignored.
 
-  `:inset` is a string put at the start of every line. It shifts the whole
-  data structure across without taking any part in the indentation of one
-  level relative to another, and counts against `:width` like any other
-  leading whitespace.
-
-  Setting `:width` to `math/inf` asks for the compact form, which is the whole
-  data structure on a single line. Unlike `hiccup->markup`, this function is a
-  pretty printer by default, so it is `:width` rather than `:indent` that asks
-  for one line.
+  `:inset` is a string put at the start of every line, whether or not the
+  source is laid out. It shifts the whole data structure across without taking
+  any part in the indentation of one level relative to another, and counts
+  against `:width` like any other leading whitespace.
   ```
   [ds &keys {:indent indent :step step :inset inset :tab tab :width width}]
-  (default indent 2)
   (default step " ")
   (default inset "")
   (default width 80)
@@ -122,7 +118,11 @@
     (error "`:tab` has been replaced by `:step` and `:indent`"))
   (def res @"")
   (buffer/push res inset)
-  (value->source ds res inset (string/repeat step indent) width)
+  # an unreachable width keeps every value on the line it starts on, which is
+  # how the one-line form is rendered
+  (value->source ds res inset
+                 (if indent (string/repeat step indent) "")
+                 (if indent width math/inf))
   res)
 
 (def janet->source

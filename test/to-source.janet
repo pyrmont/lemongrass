@@ -2,14 +2,22 @@
 
 (import ../lib/to-source :as lg)
 
+(deftest no-indent-gives-one-line
+  (def janet @[:div @[:ul @[:li "One"] @[:li "Two"]]])
+  (is (== `@[:div @[:ul @[:li "One"] @[:li "Two"]]]`
+          (lg/hiccup->source janet)))
+  # the width has nothing to fit when everything is on one line
+  (is (== `@[:div @[:ul @[:li "One"] @[:li "Two"]]]`
+          (lg/hiccup->source janet :width 10))))
+
 (deftest fits-on-one-line
   (def janet @[:p "Hello " @[:em "world"] "!"])
-  (def actual (lg/hiccup->source janet))
+  (def actual (lg/hiccup->source janet :indent 2))
   (is (== `@[:p "Hello " @[:em "world"] "!"]` actual)))
 
 (deftest breaks-when-too-wide
   (def janet @[:main @[:div @[:h1 "Bottom Navbar example"] @[:p "Foo."]]])
-  (def actual (lg/hiccup->source janet :width 40))
+  (def actual (lg/hiccup->source janet :indent 2 :width 40))
   (def expect
     `@[:main
       @[:div
@@ -19,7 +27,7 @@
 
 (deftest attributes-stay-on-opening-line
   (def janet @[:div {:class "wrapper"} @[:p "One"] @[:p "Two"]])
-  (def actual (lg/hiccup->source janet :width 30))
+  (def actual (lg/hiccup->source janet :indent 2 :width 30))
   (def expect
     `@[:div {:class "wrapper"}
       @[:p "One"]
@@ -42,7 +50,7 @@
 
 (deftest an-inset-shifts-every-line
   (def janet @[:main @[:p "One"] @[:p "Two"]])
-  (def actual (lg/hiccup->source janet :width 30 :inset "    "))
+  (def actual (lg/hiccup->source janet :indent 2 :width 30 :inset "    "))
   (def expect
     (string `    @[:main` "\n"
             `      @[:p "One"]` "\n"
@@ -52,9 +60,9 @@
 (deftest an-inset-counts-against-the-width
   (def janet @[:p "One"])
   # the value fits within 20 columns on its own but not once inset by 10
-  (is (== `@[:p "One"]` (lg/hiccup->source janet :width 20)))
+  (is (== `@[:p "One"]` (lg/hiccup->source janet :indent 2 :width 20)))
   (is (== (string "          @[:p\n            \"One\"]")
-          (lg/hiccup->source janet :width 20 :inset "          "))))
+          (lg/hiccup->source janet :indent 2 :width 20 :inset "          "))))
 
 (deftest a-retired-tab-is-rejected
   (def janet @[:main @[:p "One"]])
@@ -62,7 +70,7 @@
 
 (deftest tuples-keep-their-delimiters
   (def janet [:p "One" "Two"])
-  (def actual (lg/hiccup->source janet :width 10))
+  (def actual (lg/hiccup->source janet :indent 2 :width 10))
   (def expect
     `[:p
       "One"
@@ -75,22 +83,22 @@
     `@[:ul
       @[:li "One"]
       @[:li "Two"]]`)
-  (is (== expect (lg/hiccup->source janet))))
+  (is (== expect (lg/hiccup->source janet :indent 2))))
 
 (deftest inline-children-are-kept-together
   (def janet @[:p "A " @[:em "short"] " note."])
   (is (== `@[:p "A " @[:em "short"] " note."]`
-          (lg/hiccup->source janet))))
+          (lg/hiccup->source janet :indent 2))))
 
 (deftest unknown-elements-are-treated-as-inline
   (def janet @[:config @[:host "localhost"] @[:port "8080"]])
   (is (== `@[:config @[:host "localhost"] @[:port "8080"]]`
-          (lg/hiccup->source janet))))
+          (lg/hiccup->source janet :indent 2))))
 
 (deftest an-unreachable-width-gives-the-compact-form
   (def janet @[:div @[:ul @[:li "One"] @[:li "Two"]]])
   (is (== `@[:div @[:ul @[:li "One"] @[:li "Two"]]]`
-          (lg/hiccup->source janet :width math/inf))))
+          (lg/hiccup->source janet :indent 2 :width math/inf))))
 
 (deftest source-evaluates-back-to-the-data-structure
   (def janet
@@ -100,7 +108,7 @@
         @[:div {:class "wrapper"}
           @[:h1 "Hello world!"]
           @[:p "Hello " @[:em "there"] " friend."]]]])
-  (def actual (eval-string (lg/hiccup->source janet :width 40)))
+  (def actual (eval-string (lg/hiccup->source janet :indent 2 :width 40)))
   (is (== janet actual)))
 
 (run-tests!)

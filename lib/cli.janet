@@ -74,15 +74,14 @@
   (default indent 2)
   (default width 80)
   (string
+    # in either direction a nil indent keeps the output on one line
     (if to-markup?
       (lg/hiccup->markup (eval-string input)
                          :format (if html? :html :xml)
-                         # a nil indent keeps the output on one line
                          :indent (when pretty? indent))
       (lg/hiccup->source (lg/markup->hiccup input :html? html?)
-                         :indent indent
-                         # an unreachable width keeps the output on one line
-                         :width (if pretty? width math/inf)))))
+                         :indent (when pretty? indent)
+                         :width width))))
 
 
 (defn run []
