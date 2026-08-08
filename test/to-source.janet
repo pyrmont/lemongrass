@@ -26,14 +26,39 @@
       @[:p "Two"]]`)
   (is (== expect actual)))
 
-(deftest custom-tab
+(deftest custom-indent
   (def janet @[:main @[:p "One"] @[:p "Two"]])
-  (def actual (lg/hiccup->source janet :width 20 :tab "    "))
+  (def actual (lg/hiccup->source janet :width 20 :indent 4))
   (def expect
     `@[:main
         @[:p "One"]
         @[:p "Two"]]`)
   (is (== expect actual)))
+
+(deftest custom-step
+  (def janet @[:main @[:p "One"] @[:p "Two"]])
+  (def actual (lg/hiccup->source janet :width 20 :indent 1 :step "\t"))
+  (is (== "@[:main\n\t@[:p \"One\"]\n\t@[:p \"Two\"]]" actual)))
+
+(deftest an-inset-shifts-every-line
+  (def janet @[:main @[:p "One"] @[:p "Two"]])
+  (def actual (lg/hiccup->source janet :width 30 :inset "    "))
+  (def expect
+    (string `    @[:main` "\n"
+            `      @[:p "One"]` "\n"
+            `      @[:p "Two"]]`))
+  (is (== expect actual)))
+
+(deftest an-inset-counts-against-the-width
+  (def janet @[:p "One"])
+  # the value fits within 20 columns on its own but not once inset by 10
+  (is (== `@[:p "One"]` (lg/hiccup->source janet :width 20)))
+  (is (== (string "          @[:p\n            \"One\"]")
+          (lg/hiccup->source janet :width 20 :inset "          "))))
+
+(deftest a-retired-tab-is-rejected
+  (def janet @[:main @[:p "One"]])
+  (is (thrown? (lg/hiccup->source janet :tab "    "))))
 
 (deftest tuples-keep-their-delimiters
   (def janet [:p "One" "Two"])
@@ -54,7 +79,8 @@
 
 (deftest inline-children-are-kept-together
   (def janet @[:p "A " @[:em "short"] " note."])
-  (is (== `@[:p "A " @[:em "short"] " note."]` (lg/hiccup->source janet))))
+  (is (== `@[:p "A " @[:em "short"] " note."]`
+          (lg/hiccup->source janet))))
 
 (deftest unknown-elements-are-treated-as-inline
   (def janet @[:config @[:host "localhost"] @[:port "8080"]])

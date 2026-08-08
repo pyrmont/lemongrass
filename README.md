@@ -35,14 +35,15 @@ Lemongrass can be used like this:
 # => "<h1 class="foo">Hello world!</h1>"
 ```
 
-Both kinds of output can be pretty printed. Markup is indented by passing
-`:indent`, with newlines added only where they cannot change how the markup is
+Both kinds of output can be pretty printed. Markup is laid out over several
+lines by passing `:indent`, the number of spaces to indent each level of
+nesting by, with newlines added only where they cannot change how the markup is
 interpreted:
 
 ```janet
 (print (lemongrass/hiccup->markup
          [:div [:ul [:li "One"] [:li "Two"]] [:p "A " [:em "short"] " note."]]
-         :indent 0))
+         :indent 2))
 # out> <div>
 # out>   <ul>
 # out>     <li>One</li>
@@ -52,10 +53,20 @@ interpreted:
 # out> </div>
 ```
 
-Hiccup is pretty printed as Janet source with `hiccup->source`. An element is
-kept on one line where it fits within `:width` columns and holds nothing but
-text and inline elements, so the shape of the source follows the shape of the
-markup:
+Without `:indent` the markup is put on one line. Each level is indented by
+`:indent` repetitions of `:step`, so tabs are `:indent 1 :step "\t"`. A
+separate `:inset` string is put at the start of every line, which shifts the
+whole document across for embedding it in another one:
+
+```janet
+(print (lemongrass/hiccup->markup [:p "Hi"] :indent 2 :inset "    "))
+# out>     <p>Hi</p>
+```
+
+Hiccup is pretty printed as Janet source with `hiccup->source`, which takes
+`:indent`, `:step` and `:inset` in the same way. An element is kept on one line
+where it fits within `:width` columns and holds nothing but text and inline
+elements, so the shape of the source follows the shape of the markup:
 
 ```janet
 (print (lemongrass/hiccup->source

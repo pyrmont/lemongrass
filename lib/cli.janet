@@ -73,15 +73,14 @@
   (default html? true)
   (default indent 2)
   (default width 80)
-  (def tab (string/repeat " " indent))
   (string
     (if to-markup?
       (lg/hiccup->markup (eval-string input)
                          :format (if html? :html :xml)
-                         :indent (when pretty? 0)
-                         :tab tab)
+                         # a nil indent keeps the output on one line
+                         :indent (when pretty? indent))
       (lg/hiccup->source (lg/markup->hiccup input :html? html?)
-                         :tab tab
+                         :indent indent
                          # an unreachable width keeps the output on one line
                          :width (if pretty? width math/inf)))))
 

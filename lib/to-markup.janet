@@ -50,12 +50,12 @@
   ```
   Renders `ds` as markup, appending the result to `res`
 
-  `indent` is nil for compact output or, otherwise, the whitespace that
-  precedes the node on its line. `tab` is the whitespace added for each level
-  of nesting. `pre?` is true if the node sits inside an element whose contents
-  are reproduced verbatim.
+  `prefix` is the whitespace that precedes the node on its line. `pad` is the
+  whitespace added for each level of nesting, or nil for compact output, in
+  which case no newline is introduced anywhere. `pre?` is true if the node
+  sits inside an element whose contents are reproduced verbatim.
   ```
-  [ds res format indent tab pre?]
+  [ds res format prefix pad pre?]
   (cond
     (bytes? ds)
     (buffer/push res ds)
@@ -93,19 +93,19 @@
           (buffer/push res "></" name ">"))
         (do
           (buffer/push res ">")
-          (def break? (and indent (not pre?) (breakable? ds i format)))
-          (def child-indent (when indent (string indent tab)))
+          (def break? (and pad (not pre?) (breakable? ds i format)))
+          (def child-prefix (if pad (string prefix pad) prefix))
           (var prev nil)
           (while (< i (length ds))
             (def child (get ds i))
             (when (and break?
                        (or (nil? prev) (break-before? prev child format)))
-              (buffer/push res "\n" child-indent))
+              (buffer/push res "\n" child-prefix))
             (node->markup child res format
-                          (if break? child-indent indent) tab pre?)
+                          (if break? child-prefix prefix) pad pre?)
             (set prev child)
             (++ i))
-          (when break? (buffer/push res "\n" indent))
+          (when break? (buffer/push res "\n" prefix))
           (buffer/push res "</" name ">"))))
 
     (error "invalid data structure")))
@@ -117,12 +117,16 @@
   This function takes a Hiccup data structure and converts it to markup. By
   default, the markup is HTML. If not, `:format` can be set to `:xml`.
 
-  If `:indent` is a number, the markup is pretty printed with that many spaces
-  of leading indentation and `:tab` (two spaces by default) added for each
-  level of nesting. A newline is only introduced between two nodes where it
+  If `:indent` is a number, the markup is laid out over several lines, each
+  level of nesting indented by that many repetitions of `:step` (a single
+  space by default). A newline is only introduced between two nodes where it
   cannot change how the markup is interpreted, so the contents of elements
-  like `<p>` and `<pre>` are left alone. If `:indent` is nil, no whitespace is
-  added at all.
+  like `<p>` and `<pre>` are left alone. If `:indent` is nil, the markup is
+  put on one line.
+
+  `:inset` is a string put at the start of every line, whether or not the
+  markup is laid out. It shifts the whole document across without taking any
+  part in the indentation of one level relative to another.
 
   A `<!doctype html>` declaration is added ahead of a top-level `:html`
   element unless `:add-doctype?` is set to false or the data structure
@@ -130,16 +134,21 @@
   ```
   [ds &keys {:format format
              :indent indent
+             :step step
+             :inset inset
              :tab tab
              :add-doctype? add-doctype?}]
   (default format :html)
-  (default tab "  ")
+  (default step " ")
+  (default inset "")
   (default add-doctype? true)
+  (when tab
+    (error "`:tab` has been replaced by `:step` and `:indent`"))
   (unless (or (= :html format) (= :xml format))
     (error "unsupported format"))
   (def res @"")
   (def nodes (if (indexed? (first ds)) ds [ds]))
-  (def prefix (when indent (string/repeat " " indent)))
+  (def pad (when indent (string/repeat step indent)))
   (def declared?
     (truthy? (some (fn [node]
                      (and (indexed? node) (elements/declaration? (first node))))
@@ -150,17 +159,17 @@
     # as the whitespace between two children, and is only added at all when
     # the markup is being laid out
     (if (nil? prev)
-      (when prefix (buffer/push res prefix))
-      (when (and prefix (break-before? prev node format))
-        (buffer/push res "\n" prefix)))
+      (buffer/push res inset)
+      (when (and pad (break-before? prev node format))
+        (buffer/push res "\n" inset)))
     (when (and add-doctype?
                (not declared?)
                (= :html format)
                (indexed? node)
                (= :html (first node)))
       (buffer/push res "<!doctype html>")
-      (when prefix (buffer/push res "\n" prefix)))
-    (node->markup node res format prefix tab false)
+      (when pad (buffer/push res "\n" inset)))
+    (node->markup node res format inset pad false)
     (set prev node))
   res)
 

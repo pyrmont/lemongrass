@@ -7,7 +7,7 @@
 **function**  | [source][1]
 
 ```janet
-(hiccup->markup ds &keys {:add-doctype? add-doctype? :tab tab :indent indent :format format})
+(hiccup->markup ds &keys {:add-doctype? add-doctype? :inset inset :tab tab :indent indent :step step :format format})
 ```
 
 Converts a Hiccup data structure to markup
@@ -15,12 +15,16 @@ Converts a Hiccup data structure to markup
 This function takes a Hiccup data structure and converts it to markup. By
 default, the markup is HTML. If not, `:format` can be set to `:xml`.
 
-If `:indent` is a number, the markup is pretty printed with that many spaces
-of leading indentation and `:tab` (two spaces by default) added for each
-level of nesting. A newline is only introduced between two nodes where it
+If `:indent` is a number, the markup is laid out over several lines, each
+level of nesting indented by that many repetitions of `:step` (a single
+space by default). A newline is only introduced between two nodes where it
 cannot change how the markup is interpreted, so the contents of elements
-like `<p>` and `<pre>` are left alone. If `:indent` is nil, no whitespace is
-added at all.
+like `<p>` and `<pre>` are left alone. If `:indent` is nil, the markup is
+put on one line.
+
+`:inset` is a string put at the start of every line, whether or not the
+markup is laid out. It shifts the whole document across without taking any
+part in the indentation of one level relative to another.
 
 A `<!doctype html>` declaration is added ahead of a top-level `:html`
 element unless `:add-doctype?` is set to false or the data structure
@@ -34,7 +38,7 @@ already carries a declaration of its own.
 **function**  | [source][2]
 
 ```janet
-(hiccup->source ds &keys {:tab tab :width width})
+(hiccup->source ds &keys {:inset inset :width width :tab tab :indent indent :step step})
 ```
 
 Converts a Hiccup data structure to a string of Janet source
@@ -43,11 +47,19 @@ This function takes a Hiccup data structure and pretty prints it as Janet
 source. An element is put on one line if it fits within `:width` columns (80
 by default) and none of its children starts a block of its own; otherwise its
 tag (and its attributes, if they fit too) stay on the opening line and its
-children are placed beneath it, indented by `:tab` (two spaces by default)
-for each level of nesting.
+children are placed beneath it, indented by `:indent` (2 by default)
+repetitions of `:step` (a single space by default) for each level of
+nesting.
+
+`:inset` is a string put at the start of every line. It shifts the whole
+data structure across without taking any part in the indentation of one
+level relative to another, and counts against `:width` like any other
+leading whitespace.
 
 Setting `:width` to `math/inf` asks for the compact form, which is the whole
-data structure on a single line.
+data structure on a single line. Unlike `hiccup->markup`, this function is a
+pretty printer by default, so it is `:width` rather than `:indent` that asks
+for one line.
 
 [2]: lib/to-source.janet#L94
 
@@ -62,7 +74,7 @@ data structure on a single line.
 
 An alias for `hiccup->markup`
 
-[3]: lib/to-markup.janet#L167
+[3]: lib/to-markup.janet#L176
 
 
 ## janet-&gt;source
@@ -75,7 +87,7 @@ An alias for `hiccup->markup`
 
 An alias for `hiccup->source`
 
-[4]: lib/to-source.janet#L115
+[4]: lib/to-source.janet#L128
 
 
 ## markup-&gt;hiccup
