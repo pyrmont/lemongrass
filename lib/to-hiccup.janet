@@ -129,6 +129,10 @@
 
 (def markup->janet
   ```
-  An alias for `markup->hiccup`
+  A deprecated alias for `markup->hiccup`
+
+  This name is kept for code written before the library used Hiccup
+  terminology. New code should call `markup->hiccup`.
   ```
+  :deprecated
   markup->hiccup)

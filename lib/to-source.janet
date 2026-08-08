@@ -127,6 +127,10 @@
 
 (def janet->source
   ```
-  An alias for `hiccup->source`
+  A deprecated alias for `hiccup->source`
+
+  This name is kept for code written before the library used Hiccup
+  terminology. New code should call `hiccup->source`.
   ```
+  :deprecated
   hiccup->source)

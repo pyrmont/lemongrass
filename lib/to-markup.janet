@@ -175,7 +175,7 @@
 
 (defn janet->markup
   ```
-  Converts a Hiccup data structure to markup, taking the older options
+  A deprecated conversion of a Hiccup data structure to markup
 
   This function is kept for code written before `:step` and `:inset` were
   introduced, when `:indent` was the number of spaces every line was shifted
@@ -185,6 +185,7 @@
   New code should call `hiccup->markup`, where `:indent` is the number of
   steps added for each level of nesting and the shift across is `:inset`.
   ```
+  :deprecated
   [ds &keys {:format format :indent indent :add-doctype? add-doctype?}]
   (default format :html)
   (default add-doctype? true)

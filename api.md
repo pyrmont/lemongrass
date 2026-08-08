@@ -69,7 +69,7 @@ against `:width` like any other leading whitespace.
 (janet->markup ds &keys {:indent indent :add-doctype? add-doctype? :format format})
 ```
 
-Converts a Hiccup data structure to markup, taking the older options
+A deprecated conversion of a Hiccup data structure to markup
 
 This function is kept for code written before `:step` and `:inset` were
 introduced, when `:indent` was the number of spaces every line was shifted
@@ -87,10 +87,11 @@ steps added for each level of nesting and the shift across is `:inset`.
 **function**  | [source][4]
 
 ```janet
-<function hiccup->source>
+A deprecated alias for `hiccup->source`
 ```
 
-An alias for `hiccup->source`
+This name is kept for code written before the library used Hiccup
+terminology. New code should call `hiccup->source`.
 
 [4]: lib/to-source.janet#L128
 
@@ -117,10 +118,11 @@ can be set to false.
 **function**  | [source][6]
 
 ```janet
-<function markup->hiccup>
+A deprecated alias for `markup->hiccup`
 ```
 
-An alias for `markup->hiccup`
+This name is kept for code written before the library used Hiccup
+terminology. New code should call `markup->hiccup`.
 
 [6]: lib/to-hiccup.janet#L130
 
