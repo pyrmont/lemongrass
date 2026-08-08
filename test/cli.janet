@@ -76,6 +76,38 @@
     </div>`)
   (is (== expect actual)))
 
+(deftest an-indent-on-its-own-lays-the-output-out
+  # without this the indent would be measured but never applied
+  (def actual (lg/convert `[:div [:p "Hi"] [:p "Bye"]]`
+                          :to-markup? true :indent 4))
+  (def expect
+    `<div>
+        <p>Hi</p>
+        <p>Bye</p>
+    </div>`)
+  (is (== expect actual)))
+
+(deftest a-zero-indent-on-its-own-lays-the-output-out
+  (def actual (lg/convert `[:div [:p "Hi"] [:p "Bye"]]`
+                          :to-markup? true :indent 0))
+  (is (== "<div>\n<p>Hi</p>\n<p>Bye</p>\n</div>" actual)))
+
+(deftest a-width-on-its-own-lays-the-output-out
+  (def actual (lg/convert `<div><p>Some <em>text</em> and more.</p></div>`
+                          :width 20))
+  (def expect
+    `@[:div
+      @[:p
+        "Some "
+        @[:em "text"]
+        " and more."]]`)
+  (is (== expect actual)))
+
+(deftest neither-measurement-leaves-the-output-on-one-line
+  (is (== `@[:div @[:p "Hi"]]` (lg/convert `<div><p>Hi</p></div>`)))
+  (is (== "<div><p>Hi</p></div>"
+          (lg/convert `[:div [:p "Hi"]]` :to-markup? true))))
+
 (deftest output-is-always-a-string
   (is (string? (lg/convert `<p>Hi</p>`)))
   (is (string? (lg/convert `[:p "Hi"]` :to-markup? true))))

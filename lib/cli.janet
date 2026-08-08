@@ -37,14 +37,15 @@
                             :help    "Pretty print the output over multiple lines."
                             :kind    :flag
                             :short   "p"}
-           "--indent"      {:default 2
-                            :help    "The <number> of spaces added for each level of nesting when pretty printing."
+           # neither of these carries a `:default`, since a default is filled
+           # in whether or not the option is given and would leave no way to
+           # tell that the output has been asked to be pretty printed
+           "--indent"      {:help    "The <number> of spaces added for each level of nesting. Implies --pretty. (Default: 2)"
                             :kind    :single
                             :proxy   "number"
                             :short   "i"
                             :value   (at-least 0)}
-           "--width"       {:default 80
-                            :help    "The <number> of columns an element is fitted within when pretty printing Hiccup."
+           "--width"       {:help    "The <number> of columns an element is fitted within when pretty printing Hiccup. Implies --pretty. (Default: 80)"
                             :kind    :single
                             :proxy   "number"
                             :short   "w"
@@ -60,27 +61,30 @@
   By default a string of markup is converted to a Hiccup data structure. If
   `to-markup?` is true, the conversion runs the other way and `input` is read
   as the Janet source of a Hiccup data structure. `html?` selects the markup
-  language and `pretty?` lays the output out over several lines rather than
-  one.
+  language.
 
-  When the output is pretty printed, `indent` is the number of spaces (two by
-  default) added for each level of nesting and `width` is the number of columns
-  (80 by default) an element is fitted within before it is broken open. Only
-  Hiccup output is fitted to a width, so `width` is ignored if `to-markup?` is
-  true.
+  The output is laid out over several lines if `pretty?` is true or if either
+  of `indent` and `width` is given, and is otherwise put on one line. `indent`
+  is the number of spaces (two by default) added for each level of nesting and
+  `width` is the number of columns (80 by default) an element is fitted within
+  before it is broken open. Only Hiccup output is fitted to a width, so `width`
+  is ignored if `to-markup?` is true.
   ```
   [input &named to-markup? html? pretty? indent width]
   (default html? true)
-  (default indent 2)
-  (default width 80)
+  # asking for either of the measurements is a way of asking for the output to
+  # be laid out, so neither is ignored when it is given on its own
+  (def laid-out? (or (truthy? pretty?) (truthy? indent) (truthy? width)))
+  (def indent (when laid-out? (or indent 2)))
+  (def width (or width 80))
   (string
     # in either direction a nil indent keeps the output on one line
     (if to-markup?
       (lg/hiccup->markup (eval-string input)
                          :format (if html? :html :xml)
-                         :indent (when pretty? indent))
+                         :indent indent)
       (lg/hiccup->source (lg/markup->hiccup input :html? html?)
-                         :indent (when pretty? indent)
+                         :indent indent
                          :width width))))
 
 

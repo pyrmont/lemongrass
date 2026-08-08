@@ -110,8 +110,9 @@ Options:
  -r, --reverse            Reverse the polarity and convert from Hiccup to markup.
 
  -p, --pretty             Pretty print the output over multiple lines.
- -i, --indent <number>    The <number> of spaces added for each level of nesting when pretty printing. (Default: 2)
- -w, --width <number>     The <number> of columns an element is fitted within when pretty printing Hiccup. (Default: 80)
+ -i, --indent <number>    The <number> of spaces added for each level of nesting. Implies --pretty. (Default: 2)
+ -w, --width <number>     The <number> of columns an element is fitted within when pretty printing Hiccup. Implies --pretty.
+                          (Default: 80)
 
  -h, --help               Show this help message.
 ```
@@ -134,10 +135,12 @@ $ lg --pretty page.html
 ```
 
 Use `--width` to change the number of columns an element is fitted within and
-`--indent` to change the number of spaces added for each level of nesting:
+`--indent` to change the number of spaces added for each level of nesting.
+Either one asks for the output to be pretty printed, so `--pretty` can be left
+off when one of them is given:
 
 ```shell
-$ lg --pretty --width 40 --indent 4 page.html
+$ lg --width 40 --indent 4 page.html
 @[:div @{:class "wrap"}
     @[:h1 "Hello"]
     @[:p
