@@ -173,8 +173,24 @@
     (set prev node))
   res)
 
-(def janet->markup
+(defn janet->markup
   ```
-  An alias for `hiccup->markup`
+  Converts a Hiccup data structure to markup, taking the older options
+
+  This function is kept for code written before `:step` and `:inset` were
+  introduced, when `:indent` was the number of spaces every line was shifted
+  across by and each level of nesting was indented by a further two. It takes
+  `:indent` that way and passes the rest of its arguments along unchanged.
+
+  New code should call `hiccup->markup`, where `:indent` is the number of
+  steps added for each level of nesting and the shift across is `:inset`.
   ```
-  hiccup->markup)
+  [ds &keys {:format format :indent indent :add-doctype? add-doctype?}]
+  (default format :html)
+  (default add-doctype? true)
+  (hiccup->markup ds
+                  :format format
+                  :add-doctype? add-doctype?
+                  # two spaces for each level of nesting was not adjustable
+                  :indent (when indent 2)
+                  :inset (when indent (string/repeat " " indent))))

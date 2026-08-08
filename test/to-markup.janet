@@ -247,6 +247,25 @@
   (is (== "  <div>a</div><div>b</div>"
           (to-markup/hiccup->markup janet :inset "  "))))
 
+(deftest the-older-name-takes-the-older-indent
+  # :indent was the shift across, with two spaces for each level of nesting
+  (def janet @[:div @[:ul @[:li "1"]]])
+  (is (== "<div>\n  <ul>\n    <li>1</li>\n  </ul>\n</div>"
+          (to-markup/janet->markup janet :indent 0)))
+  (is (== (string "    <div>\n      <ul>\n        <li>1</li>\n"
+                  "      </ul>\n    </div>")
+          (to-markup/janet->markup janet :indent 4))))
+
+(deftest the-older-name-still-puts-markup-on-one-line
+  (def janet @[:div @[:p "a"] @[:p "b"]])
+  (is (== "<div><p>a</p><p>b</p></div>" (to-markup/janet->markup janet))))
+
+(deftest the-older-name-passes-the-other-options-along
+  (is (== "<root><leaf/></root>"
+          (to-markup/janet->markup [:root [:leaf]] :format :xml)))
+  (is (== "<html><body></body></html>"
+          (to-markup/janet->markup @[:html @[:body]] :add-doctype? false))))
+
 (deftest compact-output-reproduces-the-source
   (def src
     (string "<!doctype html><html><head><title>T</title></head>"

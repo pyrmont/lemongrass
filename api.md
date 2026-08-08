@@ -66,10 +66,18 @@ against `:width` like any other leading whitespace.
 **function**  | [source][3]
 
 ```janet
-<function hiccup->markup>
+(janet->markup ds &keys {:indent indent :add-doctype? add-doctype? :format format})
 ```
 
-An alias for `hiccup->markup`
+Converts a Hiccup data structure to markup, taking the older options
+
+This function is kept for code written before `:step` and `:inset` were
+introduced, when `:indent` was the number of spaces every line was shifted
+across by and each level of nesting was indented by a further two. It takes
+`:indent` that way and passes the rest of its arguments along unchanged.
+
+New code should call `hiccup->markup`, where `:indent` is the number of
+steps added for each level of nesting and the shift across is `:inset`.
 
 [3]: lib/to-markup.janet#L176
 
